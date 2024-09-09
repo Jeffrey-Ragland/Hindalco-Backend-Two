@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const hindalcoSchema = new mongoose.Schema(
   {
+    DeviceName: String,
     S1: String,
     S2: String,
     S3: String,
@@ -17,6 +18,9 @@ const hindalcoSchema = new mongoose.Schema(
     S13: String,
     S14: String,
     S15: String,
+    DeviceTemperature: String,
+    DeviceBattery: String,
+    DeviceSignal: String,
   },
   { timestamps: true }
 );

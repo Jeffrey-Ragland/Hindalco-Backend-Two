@@ -65,17 +65,18 @@ export const validateToken = (req,res) => {
 };
 
 // insert link
-// http://localhost:4000/backend/insertHindalcoData?s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]
+// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]&deviceTemperature=[deviceTemperature]&deviceSignal=[deviceSignal]&deviceBattery=[deviceBattery]
 
 export const insertHindalcoData = async (req,res) => {
-  const {s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15} = req.query;
+  const {deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery} = req.query;
 
-  if ( !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13|| !s14 || !s15 ) {
+  if ( !deviceName || !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13|| !s14 || !s15 || !deviceTemperature || !deviceSignal || !deviceBattery ) {
     return res.status(400).json({ error: 'Missing required parameters'});
   }
 
   try {
     const hindalcoData = {
+      DeviceName: deviceName,
       S1: s1,
       S2: s2,
       S3: s3,
@@ -91,6 +92,9 @@ export const insertHindalcoData = async (req,res) => {
       S13: s13,
       S14: s14,
       S15: s15,
+      DeviceTemperature: deviceTemperature,
+      DeviceSignal: deviceSignal,
+      DeviceBattery: deviceBattery
     };
     await hindalcoModel.create(hindalcoData);
     res.status(200).json({ message: 'Data inserted successfully' });
@@ -104,7 +108,7 @@ export const getHindalcoData = async (req, res) => {
     const limit = parseInt(req.query.limit);
 
     const hindalcoData = await hindalcoModel
-      .find({})
+      .find({DeviceName: 'XY001'}) //static device number
       .sort({ _id: -1 })
       .limit(limit)
       .select({ __v: 0, updatedAt: 0 });

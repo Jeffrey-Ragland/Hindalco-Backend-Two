@@ -1,31 +1,49 @@
 import requests
+import random
 import time
-import math
 
-# Initialize parameters
-initial_value = 50
-scaling_factor = 40  # Increased scaling factor for a broader range
-num_points = 15
+# URL endpoint
+url = "http://localhost:4000/backend/insertHindalcoData"
 
-def generate_smooth_data(t):
-    # Generate smooth, linearly varying data with a wider range
-    return {
-        f's{i+1}': round(initial_value + scaling_factor * math.sin(t + i), 2) for i in range(num_points)
+# Static device name
+device_name = "XY001"
+
+# Function to generate random data and make a request
+def push_data():
+    # Random data for s1 to s10 (0 to 100)
+    sensor_data = {f"s{i}": random.randint(0, 100) for i in range(1, 11)}
+
+    # s11 to s15 should be "N/A"
+    for i in range(11, 16):
+        sensor_data[f"s{i}"] = "N/A"
+
+    # Random values for deviceTemperature (0 to 120)
+    device_temperature = random.randint(0, 120)
+
+    # Random values for deviceSignal and deviceBattery (0 to 100)
+    device_signal = random.randint(0, 100)
+    device_battery = random.randint(0, 100)
+
+    # Query parameters
+    params = {
+        "deviceName": device_name,
+        **sensor_data,
+        "deviceTemperature": device_temperature,
+        "deviceSignal": device_signal,
+        "deviceBattery": device_battery
     }
 
-def send_data():
-    url = "http://localhost:4000/backend/insertHindalcoData"
-    t = 0
-    while True:
-        data = generate_smooth_data(t)
-        response = requests.get(url, params=data)
+    try:
+        # Send the GET request
+        response = requests.get(url, params=params)
         if response.status_code == 200:
-            print("Data sent successfully:", data)
+            print(f"Data sent successfully: {response.text}")
         else:
-            print("Failed to send data:", response.status_code, response.text)
-        
-        t += 0.5  # Increment the time variable to create a smooth change in data
-        time.sleep(0.01)  # Wait for 1 second before sending data again
+            print(f"Failed to send data. Status code: {response.status_code}")
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
-if __name__ == "__main__":
-    send_data()
+# Continuously push data every 1 second
+while True:
+    push_data()
+    time.sleep(0.01)

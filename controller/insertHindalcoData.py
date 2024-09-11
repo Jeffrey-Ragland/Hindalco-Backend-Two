@@ -46,4 +46,4 @@ def push_data():
 # Continuously push data every 1 second
 while True:
     push_data()
-    time.sleep(0.01)
+    time.sleep(10)

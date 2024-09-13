@@ -129,8 +129,6 @@ export const getHindalcoReport = async (req,res) => {
       projectName,
       fromDate,
       toDate,
-      avgFromDate,
-      avgToDate,
       count,
       unselectedSensors,
       sensorWiseFromDate,
@@ -138,131 +136,54 @@ export const getHindalcoReport = async (req,res) => {
       sensorWiseCount,
     } = req.query;
 
-    if(projectName) {
-      if(fromDate || toDate || count || unselectedSensors || sensorWiseFromDate || sensorWiseToDate || sensorWiseCount) {
-        let query = { DeviceName: projectName };
-        let sort = { _id: -1 };
-        const unselectedSensorsArray = unselectedSensors
-          ? unselectedSensors.split(",")
-          : [];
+    let query = { DeviceName: projectName };
+    let sort = { _id: -1 };
+    const unselectedSensorsArray = unselectedSensors
+      ? unselectedSensors.split(",")
+      : [];
 
-        if (fromDate || toDate) {
-          const newToDate = new Date(toDate);
-          newToDate.setDate(newToDate.getDate() + 1);
+    if (fromDate || toDate) {
+      const newToDate = new Date(toDate);
+      newToDate.setDate(newToDate.getDate() + 1);
+      query.createdAt = { $gte: new Date(fromDate), $lte: newToDate };
+    }
 
-          query.createdAt = { $gte: new Date(fromDate), $lte: newToDate };
-        }
+    if (sensorWiseFromDate || sensorWiseToDate) {
+      const newSensorWiseToDate = new Date(sensorWiseToDate);
+      newSensorWiseToDate.setDate(newSensorWiseToDate.getDate() + 1);
 
-        if (sensorWiseFromDate || sensorWiseToDate) {
-          const newSensorWiseToDate = new Date(sensorWiseToDate);
-          newSensorWiseToDate.setDate(newSensorWiseToDate.getDate() + 1);
+      query.createdAt = {
+        $gte: new Date(sensorWiseFromDate),
+        $lte: newSensorWiseToDate,
+      };
+    }
 
-          query.createdAt = {
-            $gte: new Date(sensorWiseFromDate),
-            $lte: newSensorWiseToDate,
-          };
-        }
+    let projection = { __v: 0, updatedAt: 0, _id: 0 };
 
-        let projection = { __v: 0, updatedAt: 0, _id: 0 };
+    if (unselectedSensorsArray.length > 0) {
+      unselectedSensorsArray.forEach((sensor) => {
+        projection[sensor] = 0;
+      });
+    }
 
-        if (unselectedSensorsArray.length > 0) {
-          unselectedSensorsArray.forEach((sensor) => {
-            projection[sensor] = 0;
-          });
-        }
+    let cursor = hindalcoModel.find(query).sort(sort).select(projection);
 
-        let cursor = hindalcoModel.find(query).sort(sort).select(projection);
+    if (count) {
+      cursor = cursor.limit(parseInt(count));
+    }
 
-        if (count) {
-          cursor = cursor.limit(parseInt(count));
-        }
+    if (sensorWiseCount) {
+      cursor = cursor.limit(parseInt(sensorWiseCount));
+    }
 
-        if (sensorWiseCount) {
-          cursor = cursor.limit(parseInt(sensorWiseCount));
-        }
+    const hindalcoReportData = await cursor.exec();
 
-        const hindalcoReportData = await cursor.exec();
-
-        res.json({ success: true, data: hindalcoReportData });
-      } 
-      // average data
-      else if(avgFromDate || avgToDate) {
-
-        console.log(avgFromDate);
-        console.log(avgToDate);
-
-        const newAvgToDate = new Date(avgToDate);
-        newAvgToDate.setDate(newAvgToDate.getDate() + 1);
-
-        const hindalcoData = hindalcoModel.aggregate([
-          {
-            $match: { DeviceName: projectName },
-            createdAt: {
-              $gte: new Date(avgFromDate),
-              $lte: newAvgToDate,
-            },
-          },
-          {
-            $project: {
-              date: {
-                $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
-              },
-              hour: { $hour: "$createdAt" },
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              DeviceTemperature: { $toInt: "$DeviceTemperature" },
-              DeviceBattery: { $toInt: "$DeviceBattery" },
-              DeviceSignal: { $toInt: "$DeviceSignal" },
-            },
-          },
-          {
-            $group: {
-              _id: { date: "$date", hour: "$hour" },
-              avgS1: { $avg: "$S1" },
-              avgS2: { $avg: "$S2" },
-              avgS3: { $avg: "$S3" },
-              avgS4: { $avg: "$S4" },
-              avgS5: { $avg: "$S5" },
-              avgDeviceTemperature: { $avg: "$DeviceTemperature" },
-              avgDeviceBattery: { $avg: "$DeviceBattery" },
-              avgDeviceSignal: { $avg: "$DeviceSignal" },
-            },
-          },
-          {
-            $project: {
-              _id: 0,
-              date: "$_id.date",
-              hour: "$_id.hour",
-              avgS1: 1,
-              avgS2: 1,
-              avgS3: 1,
-              avgS4: 1,
-              avgS5: 1,
-              avgDeviceTemperature: 1,
-              avgDeviceBattery: 1,
-              avgDeviceSignal: 1,
-            },
-          },
-          {
-            $sort: { date: 1, hour: 1 },
-          },
-        ]);
-
-        if(hindalcoData.length > 0) {
-          console.log(hindalcoData);
-           res.json({ success: true, data: hindalcoData });
-        } else {
-          res.json({ success: false, message: "Data not found" });
-        }
-      }
-    }    
+    res.json({ success: true, data: hindalcoReportData });
+        
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
-}
+};
 
 export const getHindalcoAverageReport = async(req,res) => {
   try {
@@ -278,20 +199,18 @@ export const getHindalcoAverageReport = async(req,res) => {
     const hindalcoData = await hindalcoModel.aggregate([
       {
         $match: {
-           DeviceName: projectName ,
-        createdAt: {
-          $gte: newAvgFromDate,
-          $lte: newAvgToDate,
+          DeviceName: projectName,
+          createdAt: {
+            $gte: newAvgFromDate,
+            $lte: newAvgToDate,
+          },
         },
-        }
-        
       },
       {
         $project: {
-          // Extract date and hour from createdAt field
-          date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          date: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt" } },
           hour: { $hour: "$createdAt" },
-          S1: { $toInt: "$S1" }, // Convert fields to integers if they are stored as strings
+          S1: { $toInt: "$S1" },
           S2: { $toInt: "$S2" },
           S3: { $toInt: "$S3" },
           S4: { $toInt: "$S4" },
@@ -303,23 +222,111 @@ export const getHindalcoAverageReport = async(req,res) => {
       },
       {
         $group: {
-          _id: { date: "$date", hour: "$hour" }, // Group by date and hour
-          avgS1: { $avg: "$S1" }, // Calculate average for S1
-          avgS2: { $avg: "$S2" }, // Calculate average for S2
-          avgS3: { $avg: "$S3" }, // Calculate average for S3
-          avgS4: { $avg: "$S4" }, // Calculate average for S4
-          avgS5: { $avg: "$S5" }, // Calculate average for S5
-          avgDeviceTemperature: { $avg: "$DeviceTemperature" }, // Average DeviceTemperature
-          avgDeviceBattery: { $avg: "$DeviceBattery" }, // Average DeviceBattery
-          avgDeviceSignal: { $avg: "$DeviceSignal" }, // Average DeviceSignal
+          _id: { date: "$date", hour: "$hour" }, 
+          avgS1: { $avg: "$S1" }, 
+          avgS2: { $avg: "$S2" }, 
+          avgS3: { $avg: "$S3" }, 
+          avgS4: { $avg: "$S4" }, 
+          avgS5: { $avg: "$S5" }, 
+          avgDeviceTemperature: { $avg: "$DeviceTemperature" }, 
+          avgDeviceBattery: { $avg: "$DeviceBattery" }, 
+          avgDeviceSignal: { $avg: "$DeviceSignal" }, 
+          timestamp: { $first: "$timestamp" },
         },
       },
       {
-        // Separate date and hour fields from _id
         $project: {
-          _id: 0, // Exclude _id
-          date: "$_id.date", // Create a separate field for date
-          hour: "$_id.hour", // Create a separate field for hour
+          _id: 0, 
+          date: "$_id.date", 
+          hour: "$_id.hour", 
+          avgS1: 1,
+          avgS2: 1,
+          avgS3: 1,
+          avgS4: 1,
+          avgS5: 1,
+          avgDeviceTemperature: 1,
+          avgDeviceBattery: 1,
+          avgDeviceSignal: 1,
+          timestamp: 1,
+        },
+      },
+      {
+        $addFields: {
+          adjustedHour: {
+            $mod: [{ $add: ["$hour", 5.5] }, 24],
+          },
+        },
+      },
+      {
+        $addFields: {
+          timeRange: {
+            $let: {
+              vars: {
+                startHour: { $floor: "$adjustedHour" },
+                startMinute: {
+                  $cond: {
+                    if: { $gte: [{ $mod: ["$adjustedHour", 1] }, 0.5] },
+                    then: 30,
+                    else: 0,
+                  },
+                },
+                endHour: {
+                  $mod: [
+                    {
+                      $cond: [
+                        { $eq: [{ $mod: ["$adjustedHour", 1] }, 0.5] },
+                        { $add: [{ $floor: "$adjustedHour" }, 1] },
+                        { $floor: "$adjustedHour" },
+                      ],
+                    },
+                    24,
+                  ],
+                },
+                endMinute: {
+                  $cond: {
+                    if: { $gte: [{ $mod: ["$adjustedHour", 1] }, 0.5] },
+                    then: 30,
+                    else: 30,
+                  },
+                },
+              },
+              in: {
+                $concat: [
+                  { $toString: "$$startHour" },
+                  ":",
+                  {
+                    $cond: {
+                      if: { $eq: ["$$startMinute", 0] },
+                      then: "00",
+                      else: "30",
+                    },
+                  },
+                  " to ",
+                  { $toString: "$$endHour" },
+                  ":",
+                  {
+                    $cond: {
+                      if: { $eq: ["$$endMinute", 0] },
+                      then: "00",
+                      else: "30",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          dateTimeRange: {
+            $concat: ["$date", " - ", "$timeRange"],
+          },
+        },
+      },
+      {
+        $project: {
+          dateTimeRange: 1,
           avgS1: 1,
           avgS2: 1,
           avgS3: 1,
@@ -330,74 +337,31 @@ export const getHindalcoAverageReport = async(req,res) => {
           avgDeviceSignal: 1,
         },
       },
-      {
-        $sort: { date: 1, hour: 1 }, // Sort by date and hour
-      },
     ]);
 
+    const getSortableDateTime = (dateTimeRange) => {
+      const [datePart, timePart] = dateTimeRange.split(" - ");
+      const [startTime] = timePart.split(" to ");
+
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute] = startTime.split(":").map(Number);
+
+      return (
+        year * 100000000 + month * 1000000 + day * 10000 + hour * 100 + minute
+      );
+    };
+
     if (hindalcoData.length > 0) {
-      console.log(hindalcoData);
-      res.json({ success: true, data: hindalcoData });
+       const sortedData = hindalcoData.sort((a, b) => {
+         const dateTimeA = getSortableDateTime(a.dateTimeRange);
+         const dateTimeB = getSortableDateTime(b.dateTimeRange);
+         return dateTimeB - dateTimeA; 
+       });
+      res.json({ success: true, data: sortedData });
     } else {
       res.json({ success: false, message: "Data not found" });
     }
   } catch (error) {
     res.status(500).json({ error });
   }
-}
-
-
-//aggregation pipeline 
-
-// [
-//   {
-//     $match: { DeviceName: "XY001" }, // Match for a specific device
-//   },
-//   {
-//     $project: {
-//       // Extract date and hour from createdAt field
-//       date: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt" } },
-//       hour: { $hour: "$createdAt" },
-//       S1: { $toInt: "$S1" }, // Convert fields to integers if they are stored as strings
-//       S2: { $toInt: "$S2" },
-//       S3: { $toInt: "$S3" },
-//       S4: { $toInt: "$S4" },
-//       S5: { $toInt: "$S5" },
-//       DeviceTemperature: { $toInt: "$DeviceTemperature" },
-//       DeviceBattery: { $toInt: "$DeviceBattery" },
-//       DeviceSignal: { $toInt: "$DeviceSignal" },
-//     },
-//   },
-//   {
-//     $group: {
-//       _id: { date: "$date", hour: "$hour" }, // Group by date and hour
-//       avgS1: { $avg: "$S1" }, // Calculate average for S1
-//       avgS2: { $avg: "$S2" }, // Calculate average for S2
-//       avgS3: { $avg: "$S3" }, // Calculate average for S3
-//       avgS4: { $avg: "$S4" }, // Calculate average for S4
-//       avgS5: { $avg: "$S5" }, // Calculate average for S5
-//       avgDeviceTemperature: { $avg: "$DeviceTemperature" }, // Average DeviceTemperature
-//       avgDeviceBattery: { $avg: "$DeviceBattery" }, // Average DeviceBattery
-//       avgDeviceSignal: { $avg: "$DeviceSignal" }, // Average DeviceSignal
-//     },
-//   },
-//   {
-//     // Separate date and hour fields from _id
-//     $project: {
-//       _id: 0, // Exclude _id
-//       date: "$_id.date", // Create a separate field for date
-//       hour: "$_id.hour", // Create a separate field for hour
-//       avgS1: 1,
-//       avgS2: 1,
-//       avgS3: 1,
-//       avgS4: 1,
-//       avgS5: 1,
-//       avgDeviceTemperature: 1,
-//       avgDeviceBattery: 1,
-//       avgDeviceSignal: 1,
-//     },
-//   },
-//   {
-//     $sort: { date: 1, hour: 1 }, // Sort by date and hour
-//   },
-// ];
+};

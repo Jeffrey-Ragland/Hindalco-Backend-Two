@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import loginModel from "../models/loginModel.js";
 import hindalcoModel from "../models/hindalcoModel.js";
+import hindalcoTimeModel from "../models/hindalcoTimeModel.js";
 
 // http://localhost:4000/backend/hindalcoSignup?Username=[username]&Password=[password]
 export const signup = (req, res) => {
@@ -65,7 +66,7 @@ export const validateToken = (req,res) => {
 };
 
 // insert link
-// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]&deviceTemperature=[deviceTemperature]&deviceSignal=[deviceSignal]&deviceBattery=[deviceBattery]
+// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]&deviceTemperature=[deviceTemperature]&deviceSignal=[deviceSignal]&deviceBattery=[deviceBattery]&time=[time]
 
 export const insertHindalcoData = async (req,res) => {
   const {deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery} = req.query;
@@ -74,7 +75,18 @@ export const insertHindalcoData = async (req,res) => {
     return res.status(400).json({ error: 'Missing required parameters'});
   }
 
+  function parseCustomTimestamp(customTimestamp) {
+    const [datePart, timePart] = customTimestamp.split(",");
+    const [year, month, day] = datePart.split("/");
+    const [hours, minutes, seconds] = timePart.split(":");
+
+    return new Date(
+      `20${year}-${month}-${day}T${hours}:${minutes}:${seconds}` // ISO format
+    );
+  }
+
   try {
+    // const parsedDate = parseCustomTimestamp(time);
     const hindalcoData = {
       DeviceName: deviceName,
       S1: s1,
@@ -94,8 +106,10 @@ export const insertHindalcoData = async (req,res) => {
       S15: s15,
       DeviceTemperature: deviceTemperature,
       DeviceSignal: deviceSignal,
-      DeviceBattery: deviceBattery
+      DeviceBattery: deviceBattery,
+      // Time: parsedDate
     };
+    // await hindalcoTimeModel.create(hindalcoData);
     await hindalcoModel.create(hindalcoData);
     res.status(200).json({ message: 'Data inserted successfully' });
   } catch (error) {
@@ -107,8 +121,9 @@ export const getHindalcoData = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit);
 
+    // const hindalcoData = await hindalcoTimeModel
     const hindalcoData = await hindalcoModel
-      .find({DeviceName: 'XY001'}) //static device number
+      .find({ DeviceName: "XY001" }) //static device number
       .sort({ _id: -1 })
       .limit(limit)
       .select({ __v: 0, updatedAt: 0, DeviceName: 0 });
@@ -215,6 +230,11 @@ export const getHindalcoAverageReport = async(req,res) => {
           S3: { $toInt: "$S3" },
           S4: { $toInt: "$S4" },
           S5: { $toInt: "$S5" },
+          S6: { $toInt: "$S6" },
+          S7: { $toInt: "$S7" },
+          S8: { $toInt: "$S8" },
+          S9: { $toInt: "$S9" },
+          S10: { $toInt: "$S10" },
           DeviceTemperature: { $toInt: "$DeviceTemperature" },
           DeviceBattery: { $toInt: "$DeviceBattery" },
           DeviceSignal: { $toInt: "$DeviceSignal" },
@@ -222,28 +242,38 @@ export const getHindalcoAverageReport = async(req,res) => {
       },
       {
         $group: {
-          _id: { date: "$date", hour: "$hour" }, 
-          avgS1: { $avg: "$S1" }, 
-          avgS2: { $avg: "$S2" }, 
-          avgS3: { $avg: "$S3" }, 
-          avgS4: { $avg: "$S4" }, 
-          avgS5: { $avg: "$S5" }, 
-          avgDeviceTemperature: { $avg: "$DeviceTemperature" }, 
-          avgDeviceBattery: { $avg: "$DeviceBattery" }, 
-          avgDeviceSignal: { $avg: "$DeviceSignal" }, 
+          _id: { date: "$date", hour: "$hour" },
+          avgS1: { $avg: "$S1" },
+          avgS2: { $avg: "$S2" },
+          avgS3: { $avg: "$S3" },
+          avgS4: { $avg: "$S4" },
+          avgS5: { $avg: "$S5" },
+          avgS6: { $avg: "$S6" },
+          avgS7: { $avg: "$S7" },
+          avgS8: { $avg: "$S8" },
+          avgS9: { $avg: "$S9" },
+          avgS10: { $avg: "$S10" },
+          avgDeviceTemperature: { $avg: "$DeviceTemperature" },
+          avgDeviceBattery: { $avg: "$DeviceBattery" },
+          avgDeviceSignal: { $avg: "$DeviceSignal" },
           timestamp: { $first: "$timestamp" },
         },
       },
       {
         $project: {
-          _id: 0, 
-          date: "$_id.date", 
-          hour: "$_id.hour", 
+          _id: 0,
+          date: "$_id.date",
+          hour: "$_id.hour",
           avgS1: 1,
           avgS2: 1,
           avgS3: 1,
           avgS4: 1,
           avgS5: 1,
+          avgS6: 1,
+          avgS7: 1,
+          avgS8: 1,
+          avgS9: 1,
+          avgS10: 1,
           avgDeviceTemperature: 1,
           avgDeviceBattery: 1,
           avgDeviceSignal: 1,
@@ -332,6 +362,11 @@ export const getHindalcoAverageReport = async(req,res) => {
           avgS3: 1,
           avgS4: 1,
           avgS5: 1,
+          avgS6: 1,
+          avgS7: 1,
+          avgS8: 1,
+          avgS9: 1,
+          avgS10: 1,
           avgDeviceTemperature: 1,
           avgDeviceBattery: 1,
           avgDeviceSignal: 1,

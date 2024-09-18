@@ -21,7 +21,7 @@ const hindalcoTimeSchema = new mongoose.Schema(
     DeviceTemperature: String,
     DeviceBattery: String,
     DeviceSignal: String,
-    Time: Date
+    Time: String
   }
 );
 

@@ -1,49 +1,31 @@
 import requests
-import random
 import time
+from datetime import datetime
+import random
 
-# URL endpoint
-url = "http://localhost:4000/backend/insertHindalcoData"
+def generate_data():
+    return [random.randint(40, 80) for _ in range(15)]
 
-# Static device name
-device_name = "XY001"
+def format_time():
+    now = datetime.now()
+    return now.strftime('%y/%m/%d,%H:%M:%S')
 
-# Function to generate random data and make a request
-def push_data():
-    # Random data for s1 to s10 (0 to 100)
-    sensor_data = {f"s{i}": random.randint(0, 100) for i in range(1, 11)}
+def send_data():
+    base_url = "http://localhost:4000/backend/insertHindalcoData"
+    while True:
+        s_data = generate_data()
+        device_temperature = round(random.uniform(0.0, 100.0), 1)  
+        device_signal = round(random.uniform(0.0, 100.0), 1)       
+        device_battery = round(random.uniform(0.0, 100.0), 1) 
+        time_now = format_time()
 
-    # s11 to s15 should be "N/A"
-    for i in range(11, 16):
-        sensor_data[f"s{i}"] = "N/A"
+        url = f"{base_url}?deviceName=XY001&s1={s_data[0]}&s2={s_data[1]}&s3={s_data[2]}&s4={s_data[3]}&s5={s_data[4]}&s6={s_data[5]}&s7={s_data[6]}&s8={s_data[7]}&s9={s_data[8]}&s10={s_data[9]}&s11={s_data[10]}&s12={s_data[11]}&s13={s_data[12]}&s14={s_data[13]}&s15={s_data[14]}&deviceTemperature={device_temperature}&deviceSignal={device_signal}&deviceBattery={device_battery}&time={time_now}"
+        
+        response = requests.get(url)
+        
+        print(response.status_code, response.text)
+        
+        time.sleep(10)
 
-    # Random values for deviceTemperature (0 to 120)
-    device_temperature = random.randint(0, 120)
-
-    # Random values for deviceSignal and deviceBattery (0 to 100)
-    device_signal = random.randint(0, 100)
-    device_battery = random.randint(0, 100)
-
-    # Query parameters
-    params = {
-        "deviceName": device_name,
-        **sensor_data,
-        "deviceTemperature": device_temperature,
-        "deviceSignal": device_signal,
-        "deviceBattery": device_battery
-    }
-
-    try:
-        # Send the GET request
-        response = requests.get(url, params=params)
-        if response.status_code == 200:
-            print(f"Data sent successfully: {response.text}")
-        else:
-            print(f"Failed to send data. Status code: {response.status_code}")
-    except Exception as e:
-        print(f"Error occurred: {e}")
-
-# Continuously push data every 1 second
-while True:
-    push_data()
-    time.sleep(10)
+if __name__ == "__main__":
+    send_data()

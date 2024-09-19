@@ -215,115 +215,228 @@ export const getHindalcoReport = async (req,res) => {
 
 export const getHindalcoAverageReport = async(req,res) => {
   try {
-    const { projectName, avgFromDate, avgToDate } = req.query;
+    const { projectName, avgFromDate, avgToDate, averageOption } = req.query;
 
     const formattedAvgFromDate = avgFromDate + ",00:00:00";
     const formattedAvgToDate = avgToDate + ",23:59:59";
 
-    const hindalcoAverageData = await hindalcoTimeModel.aggregate([
-      {
-        $match: {
-          DeviceName: projectName,
+    console.log("averageOption", averageOption);
+
+    if(averageOption === 'hour') {
+      const hindalcoAverageData = await hindalcoTimeModel.aggregate([
+        {
+          $match: {
+            DeviceName: projectName,
+          },
         },
-      },
-      {
-        $project: {
-          S1: { $toInt: "$S1" },
-          S2: { $toInt: "$S2" },
-          S3: { $toInt: "$S3" },
-          S4: { $toInt: "$S4" },
-          S5: { $toInt: "$S5" },
-          S6: { $toInt: "$S6" },
-          S7: { $toInt: "$S7" },
-          S8: { $toInt: "$S8" },
-          S9: { $toInt: "$S9" },
-          S10: { $toInt: "$S10" },
-          S11: { $toInt: "$S11" },
-          S12: { $toInt: "$S12" },
-          S13: { $toInt: "$S13" },
-          S14: { $toInt: "$S14" },
-          S15: { $toInt: "$S15" },
-          hour: {
-            $dateToString: {
-              format: "%Y-%m-%d,%H:00:00",
-              date: { $dateFromString: { dateString: "$Time" } },
+        {
+          $project: {
+            S1: { $toInt: "$S1" },
+            S2: { $toInt: "$S2" },
+            S3: { $toInt: "$S3" },
+            S4: { $toInt: "$S4" },
+            S5: { $toInt: "$S5" },
+            S6: { $toInt: "$S6" },
+            S7: { $toInt: "$S7" },
+            S8: { $toInt: "$S8" },
+            S9: { $toInt: "$S9" },
+            S10: { $toInt: "$S10" },
+            S11: { $toInt: "$S11" },
+            S12: { $toInt: "$S12" },
+            S13: { $toInt: "$S13" },
+            S14: { $toInt: "$S14" },
+            S15: { $toInt: "$S15" },
+            hour: {
+              $dateToString: {
+                format: "%Y-%m-%d,%H:00:00",
+                date: { $dateFromString: { dateString: "$Time" } },
+              },
             },
           },
         },
-      },
-      {
-        $group: {
-          _id: "$hour",
-          avgS1: { $avg: "$S1" },
-          avgS2: { $avg: "$S2" },
-          avgS3: { $avg: "$S3" },
-          avgS4: { $avg: "$S4" },
-          avgS5: { $avg: "$S5" },
-          avgS6: { $avg: "$S6" },
-          avgS7: { $avg: "$S7" },
-          avgS8: { $avg: "$S8" },
-          avgS9: { $avg: "$S9" },
-          avgS10: { $avg: "$S10" },
-          avgS11: { $avg: "$S11" },
-          avgS12: { $avg: "$S12" },
-          avgS13: { $avg: "$S13" },
-          avgS14: { $avg: "$S14" },
-          avgS15: { $avg: "$S15" },
+        {
+          $group: {
+            _id: "$hour",
+            avgS1: { $avg: "$S1" },
+            avgS2: { $avg: "$S2" },
+            avgS3: { $avg: "$S3" },
+            avgS4: { $avg: "$S4" },
+            avgS5: { $avg: "$S5" },
+            avgS6: { $avg: "$S6" },
+            avgS7: { $avg: "$S7" },
+            avgS8: { $avg: "$S8" },
+            avgS9: { $avg: "$S9" },
+            avgS10: { $avg: "$S10" },
+            avgS11: { $avg: "$S11" },
+            avgS12: { $avg: "$S12" },
+            avgS13: { $avg: "$S13" },
+            avgS14: { $avg: "$S14" },
+            avgS15: { $avg: "$S15" },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          dateRange: {
-            $concat: [
-              "$_id",
-              " to ",
-              {
-                $dateToString: {
-                  format: "%Y-%m-%d,%H:00:00",
-                  date: {
-                    $dateAdd: {
-                      startDate: { $dateFromString: { dateString: "$_id" } },
-                      unit: "hour",
-                      amount: 1,
+        {
+          $project: {
+            _id: 0,
+            dateRange: {
+              $concat: [
+                "$_id",
+                " to ",
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d,%H:00:00",
+                    date: {
+                      $dateAdd: {
+                        startDate: { $dateFromString: { dateString: "$_id" } },
+                        unit: "hour",
+                        amount: 1,
+                      },
                     },
                   },
                 },
-              },
-            ],
+              ],
+            },
+            avgS1: 1,
+            avgS2: 1,
+            avgS3: 1,
+            avgS4: 1,
+            avgS5: 1,
+            avgS6: 1,
+            avgS7: 1,
+            avgS8: 1,
+            avgS9: 1,
+            avgS10: 1,
+            avgS11: 1,
+            avgS12: 1,
+            avgS13: 1,
+            avgS14: 1,
+            avgS15: 1,
           },
-          avgS1: 1,
-          avgS2: 1,
-          avgS3: 1,
-          avgS4: 1,
-          avgS5: 1,
-          avgS6: 1,
-          avgS7: 1,
-          avgS8: 1,
-          avgS9: 1,
-          avgS10: 1,
-          avgS11: 1,
-          avgS12: 1,
-          avgS13: 1,
-          avgS14: 1,
-          avgS15: 1,
         },
-      },
-      {
-        $sort: { dateRange: 1 },
-      },
-    ]);
+        {
+          $sort: { dateRange: 1 },
+        },
+      ]);
 
-    if (hindalcoAverageData.length > 0) {
-      const filteredData = hindalcoAverageData.filter((data) => {
-        const dbDate = data.dateRange.split(" to ")[0];
-        return dbDate >= formattedAvgFromDate && dbDate < formattedAvgToDate;
-      });
+      if (hindalcoAverageData.length > 0) {
+        const filteredData = hindalcoAverageData.filter((data) => {
+          const dbDate = data.dateRange.split(" to ")[0];
+          return dbDate >= formattedAvgFromDate && dbDate < formattedAvgToDate;
+        });
 
-      res.json({ success: true, data: filteredData });
-    } else {
-      res.json({ success: false, message: "Data not found" });
+        res.json({ success: true, data: filteredData });
+      } else {
+        res.json({ success: false, message: "Data not found" });
+      }
+    } 
+    
+    else if(averageOption === 'minute') {
+      const hindalcoAverageData = await hindalcoTimeModel.aggregate([
+        {
+          $match: {
+            DeviceName: projectName,
+          },
+        },
+        {
+          $project: {
+            S1: { $toInt: "$S1" },
+            S2: { $toInt: "$S2" },
+            S3: { $toInt: "$S3" },
+            S4: { $toInt: "$S4" },
+            S5: { $toInt: "$S5" },
+            S6: { $toInt: "$S6" },
+            S7: { $toInt: "$S7" },
+            S8: { $toInt: "$S8" },
+            S9: { $toInt: "$S9" },
+            S10: { $toInt: "$S10" },
+            S11: { $toInt: "$S11" },
+            S12: { $toInt: "$S12" },
+            S13: { $toInt: "$S13" },
+            S14: { $toInt: "$S14" },
+            S15: { $toInt: "$S15" },
+            minute: {
+              $dateToString: {
+                format: "%Y-%m-%d,%H:%M:00", // Changed to minute-level precision
+                date: { $dateFromString: { dateString: "$Time" } },
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$minute",
+            avgS1: { $avg: "$S1" },
+            avgS2: { $avg: "$S2" },
+            avgS3: { $avg: "$S3" },
+            avgS4: { $avg: "$S4" },
+            avgS5: { $avg: "$S5" },
+            avgS6: { $avg: "$S6" },
+            avgS7: { $avg: "$S7" },
+            avgS8: { $avg: "$S8" },
+            avgS9: { $avg: "$S9" },
+            avgS10: { $avg: "$S10" },
+            avgS11: { $avg: "$S11" },
+            avgS12: { $avg: "$S12" },
+            avgS13: { $avg: "$S13" },
+            avgS14: { $avg: "$S14" },
+            avgS15: { $avg: "$S15" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            dateRange: {
+              $concat: [
+                "$_id",
+                " to ",
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d,%H:%M:00", // Same format for the next minute
+                    date: {
+                      $dateAdd: {
+                        startDate: { $dateFromString: { dateString: "$_id" } },
+                        unit: "minute", // Changed to minute
+                        amount: 1,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            avgS1: 1,
+            avgS2: 1,
+            avgS3: 1,
+            avgS4: 1,
+            avgS5: 1,
+            avgS6: 1,
+            avgS7: 1,
+            avgS8: 1,
+            avgS9: 1,
+            avgS10: 1,
+            avgS11: 1,
+            avgS12: 1,
+            avgS13: 1,
+            avgS14: 1,
+            avgS15: 1,
+          },
+        },
+        {
+          $sort: { dateRange: -1 },
+        },
+      ]);
+
+      if (hindalcoAverageData.length > 0) {
+        const filteredData = hindalcoAverageData.filter((data) => {
+          const dbDate = data.dateRange.split(" to ")[0];
+          return dbDate >= formattedAvgFromDate && dbDate < formattedAvgToDate;
+        });
+
+        res.json({ success: true, data: filteredData });
+      } else {
+        res.json({ success: false, message: "Data not found" });
+      }
     }
+
+    
   } catch (error) {
     res.status(500).json({ error });
   }

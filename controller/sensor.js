@@ -552,7 +552,7 @@ export const getHindalcoAverageReport = async(req,res) => {
               S13: 1,
               S14: 1,
               S15: 1,
-              time:"$originalTime", // Include hour if needed
+              Time:"$originalTime", // Include hour if needed
             },
           },
         ]);
@@ -560,15 +560,15 @@ export const getHindalcoAverageReport = async(req,res) => {
         if (hindalcoHourlyData.length > 0) {
           const filteredData = hindalcoHourlyData
             .filter((data) => {
-              const dbDate = data.time;
+              const dbDate = data.Time;
               return (
                 dbDate >= formattedIntervalFromDate &&
                 dbDate < formattedIntervalToDate
               );
             })
             .sort((a, b) => {
-              const [dateA, timeA] = a.time.split(",");
-              const [dateB, timeB] = b.time.split(",");
+              const [dateA, timeA] = a.Time.split(",");
+              const [dateB, timeB] = b.Time.split(",");
 
               const [yearA, monthA, dayA] = dateA.split("-").map(Number);
               const [hourA, minuteA, secondA] = timeA.split(":").map(Number);
@@ -660,22 +660,22 @@ export const getHindalcoAverageReport = async(req,res) => {
               S13: 1,
               S14: 1,
               S15: 1,
-              time: "$originalTime", // Include minute if needed
+              Time: "$originalTime", // Include minute if needed
             },
           },
         ]);
         if (hindalcoMinuteData.length > 0) {
           const filteredData = hindalcoMinuteData
             .filter((data) => {
-              const dbDate = data.time;
+              const dbDate = data.Time;
               return (
                 dbDate >= formattedIntervalFromDate &&
                 dbDate < formattedIntervalToDate
               );
             })
             .sort((a, b) => {
-              const [dateA, timeA] = a.time.split(",");
-              const [dateB, timeB] = b.time.split(",");
+              const [dateA, timeA] = a.Time.split(",");
+              const [dateB, timeB] = b.Time.split(",");
 
               const [yearA, monthA, dayA] = dateA.split("-").map(Number);
               const [hourA, minuteA, secondA] = timeA.split(":").map(Number);

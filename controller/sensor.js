@@ -232,21 +232,111 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $project: {
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              S6: { $toInt: "$S6" },
-              S7: { $toInt: "$S7" },
-              S8: { $toInt: "$S8" },
-              S9: { $toInt: "$S9" },
-              S10: { $toInt: "$S10" },
-              S11: { $toInt: "$S11" },
-              S12: { $toInt: "$S12" },
-              S13: { $toInt: "$S13" },
-              S14: { $toInt: "$S14" },
-              S15: { $toInt: "$S15" },
+              S1: {
+                $cond: {
+                  if: { $eq: ["$S1", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S1" },
+                },
+              },
+              S2: {
+                $cond: {
+                  if: { $eq: ["$S2", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S2" },
+                },
+              },
+              S3: {
+                $cond: {
+                  if: { $eq: ["$S3", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S3" },
+                },
+              },
+              S4: {
+                $cond: {
+                  if: { $eq: ["$S4", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S4" },
+                },
+              },
+              S5: {
+                $cond: {
+                  if: { $eq: ["$S5", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S5" },
+                },
+              },
+              S6: {
+                $cond: {
+                  if: { $eq: ["$S6", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S6" },
+                },
+              },
+              S7: {
+                $cond: {
+                  if: { $eq: ["$S7", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S7" },
+                },
+              },
+              S8: {
+                $cond: {
+                  if: { $eq: ["$S8", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S8" },
+                },
+              },
+              S9: {
+                $cond: {
+                  if: { $eq: ["$S9", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S9" },
+                },
+              },
+              S10: {
+                $cond: {
+                  if: { $eq: ["$S10", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S10" },
+                },
+              },
+              S11: {
+                $cond: {
+                  if: { $eq: ["$S11", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S11" },
+                },
+              },
+              S12: {
+                $cond: {
+                  if: { $eq: ["$S12", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S12" },
+                },
+              },
+              S13: {
+                $cond: {
+                  if: { $eq: ["$S13", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S13" },
+                },
+              },
+              S14: {
+                $cond: {
+                  if: { $eq: ["$S14", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S14" },
+                },
+              },
+              S15: {
+                $cond: {
+                  if: { $eq: ["$S15", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S15" },
+                },
+              },
               hour: {
                 $dateToString: {
                   format: "%Y-%m-%d,%H:00:00",
@@ -331,21 +421,22 @@ export const getHindalcoAverageReport = async(req,res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1: parseFloat(data.avgS1).toFixed(1),
-                avgS2: parseFloat(data.avgS2).toFixed(1),
-                avgS3: parseFloat(data.avgS3).toFixed(1),
-                avgS4: parseFloat(data.avgS4).toFixed(1),
-                avgS5: parseFloat(data.avgS5).toFixed(1),
-                avgS6: parseFloat(data.avgS6).toFixed(1),
-                avgS7: parseFloat(data.avgS7).toFixed(1),
-                avgS8: parseFloat(data.avgS8).toFixed(1),
-                avgS9: parseFloat(data.avgS9).toFixed(1),
-                avgS10: parseFloat(data.avgS10).toFixed(1),
-                avgS11: parseFloat(data.avgS11).toFixed(1),
-                avgS12: parseFloat(data.avgS12).toFixed(1),
-                avgS13: parseFloat(data.avgS13).toFixed(1),
-                avgS14: parseFloat(data.avgS14).toFixed(1),
-                avgS15: parseFloat(data.avgS15).toFixed(1),
+                avgS1: data.avgS1 !== null ? parseFloat(data.avgS1).toFixed(1) : 'N/A',
+                avgS2: data.avgS2 !== null ? parseFloat(data.avgS2).toFixed(1) : 'N/A',
+                avgS3: data.avgS3 !== null ? parseFloat(data.avgS3).toFixed(1) : 'N/A',
+                avgS4: data.avgS4 !== null ? parseFloat(data.avgS4).toFixed(1) : 'N/A',
+                avgS5: data.avgS5 !== null ? parseFloat(data.avgS5).toFixed(1) : 'N/A',
+                avgS6: data.avgS6 !== null ? parseFloat(data.avgS6).toFixed(1) : 'N/A',
+                avgS7: data.avgS7 !== null ? parseFloat(data.avgS7).toFixed(1) : 'N/A',
+                avgS8: data.avgS8 !== null ? parseFloat(data.avgS8).toFixed(1) : 'N/A',
+                avgS9: data.avgS9 !== null ? parseFloat(data.avgS9).toFixed(1) : 'N/A',
+                avgS10: data.avgS10 !== null ? parseFloat(data.avgS10).toFixed(1) : 'N/A',
+                avgS11: data.avgS11 !== null ? parseFloat(data.avgS11).toFixed(1) : 'N/A',
+                avgS12: data.avgS12 !== null ? parseFloat(data.avgS12).toFixed(1) : 'N/A',
+                avgS13: data.avgS13 !== null ? parseFloat(data.avgS13).toFixed(1) : 'N/A',
+                avgS14: data.avgS14 !== null ? parseFloat(data.avgS14).toFixed(1) : 'N/A',
+                avgS15: data.avgS15 !== null ? parseFloat(data.avgS15).toFixed(1) : 'N/A',
+
               };
             });
 
@@ -362,21 +453,111 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $project: {
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              S6: { $toInt: "$S6" },
-              S7: { $toInt: "$S7" },
-              S8: { $toInt: "$S8" },
-              S9: { $toInt: "$S9" },
-              S10: { $toInt: "$S10" },
-              S11: { $toInt: "$S11" },
-              S12: { $toInt: "$S12" },
-              S13: { $toInt: "$S13" },
-              S14: { $toInt: "$S14" },
-              S15: { $toInt: "$S15" },
+              S1: {
+                $cond: {
+                  if: { $eq: ["$S1", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S1" },
+                },
+              },
+              S2: {
+                $cond: {
+                  if: { $eq: ["$S2", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S2" },
+                },
+              },
+              S3: {
+                $cond: {
+                  if: { $eq: ["$S3", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S3" },
+                },
+              },
+              S4: {
+                $cond: {
+                  if: { $eq: ["$S4", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S4" },
+                },
+              },
+              S5: {
+                $cond: {
+                  if: { $eq: ["$S5", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S5" },
+                },
+              },
+              S6: {
+                $cond: {
+                  if: { $eq: ["$S6", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S6" },
+                },
+              },
+              S7: {
+                $cond: {
+                  if: { $eq: ["$S7", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S7" },
+                },
+              },
+              S8: {
+                $cond: {
+                  if: { $eq: ["$S8", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S8" },
+                },
+              },
+              S9: {
+                $cond: {
+                  if: { $eq: ["$S9", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S9" },
+                },
+              },
+              S10: {
+                $cond: {
+                  if: { $eq: ["$S10", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S10" },
+                },
+              },
+              S11: {
+                $cond: {
+                  if: { $eq: ["$S11", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S11" },
+                },
+              },
+              S12: {
+                $cond: {
+                  if: { $eq: ["$S12", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S12" },
+                },
+              },
+              S13: {
+                $cond: {
+                  if: { $eq: ["$S13", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S13" },
+                },
+              },
+              S14: {
+                $cond: {
+                  if: { $eq: ["$S14", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S14" },
+                },
+              },
+              S15: {
+                $cond: {
+                  if: { $eq: ["$S15", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S15" },
+                },
+              },
               minute: {
                 $dateToString: {
                   format: "%Y-%m-%d,%H:%M:00", // Changed to minute-level precision
@@ -461,21 +642,21 @@ export const getHindalcoAverageReport = async(req,res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1: parseFloat(data.avgS1).toFixed(1),
-                avgS2: parseFloat(data.avgS2).toFixed(1),
-                avgS3: parseFloat(data.avgS3).toFixed(1),
-                avgS4: parseFloat(data.avgS4).toFixed(1),
-                avgS5: parseFloat(data.avgS5).toFixed(1),
-                avgS6: parseFloat(data.avgS6).toFixed(1),
-                avgS7: parseFloat(data.avgS7).toFixed(1),
-                avgS8: parseFloat(data.avgS8).toFixed(1),
-                avgS9: parseFloat(data.avgS9).toFixed(1),
-                avgS10: parseFloat(data.avgS10).toFixed(1),
-                avgS11: parseFloat(data.avgS11).toFixed(1),
-                avgS12: parseFloat(data.avgS12).toFixed(1),
-                avgS13: parseFloat(data.avgS13).toFixed(1),
-                avgS14: parseFloat(data.avgS14).toFixed(1),
-                avgS15: parseFloat(data.avgS15).toFixed(1),
+                avgS1: data.avgS1 !== null ? parseFloat(data.avgS1).toFixed(1) : 'N/A',
+                avgS2: data.avgS2 !== null ? parseFloat(data.avgS2).toFixed(1) : 'N/A',
+                avgS3: data.avgS3 !== null ? parseFloat(data.avgS3).toFixed(1) : 'N/A',
+                avgS4: data.avgS4 !== null ? parseFloat(data.avgS4).toFixed(1) : 'N/A',
+                avgS5: data.avgS5 !== null ? parseFloat(data.avgS5).toFixed(1) : 'N/A',
+                avgS6: data.avgS6 !== null ? parseFloat(data.avgS6).toFixed(1) : 'N/A',
+                avgS7: data.avgS7 !== null ? parseFloat(data.avgS7).toFixed(1) : 'N/A',
+                avgS8: data.avgS8 !== null ? parseFloat(data.avgS8).toFixed(1) : 'N/A',
+                avgS9: data.avgS9 !== null ? parseFloat(data.avgS9).toFixed(1) : 'N/A',
+                avgS10: data.avgS10 !== null ? parseFloat(data.avgS10).toFixed(1) : 'N/A',
+                avgS11: data.avgS11 !== null ? parseFloat(data.avgS11).toFixed(1) : 'N/A',
+                avgS12: data.avgS12 !== null ? parseFloat(data.avgS12).toFixed(1) : 'N/A',
+                avgS13: data.avgS13 !== null ? parseFloat(data.avgS13).toFixed(1) : 'N/A',
+                avgS14: data.avgS14 !== null ? parseFloat(data.avgS14).toFixed(1) : 'N/A',
+                avgS15: data.avgS15 !== null ? parseFloat(data.avgS15).toFixed(1) : 'N/A',
               };
             });
 
@@ -494,21 +675,111 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $project: {
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              S6: { $toInt: "$S6" },
-              S7: { $toInt: "$S7" },
-              S8: { $toInt: "$S8" },
-              S9: { $toInt: "$S9" },
-              S10: { $toInt: "$S10" },
-              S11: { $toInt: "$S11" },
-              S12: { $toInt: "$S12" },
-              S13: { $toInt: "$S13" },
-              S14: { $toInt: "$S14" },
-              S15: { $toInt: "$S15" },
+              S1: {
+                $cond: {
+                  if: { $eq: ["$S1", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S1" },
+                },
+              },
+              S2: {
+                $cond: {
+                  if: { $eq: ["$S2", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S2" },
+                },
+              },
+              S3: {
+                $cond: {
+                  if: { $eq: ["$S3", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S3" },
+                },
+              },
+              S4: {
+                $cond: {
+                  if: { $eq: ["$S4", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S4" },
+                },
+              },
+              S5: {
+                $cond: {
+                  if: { $eq: ["$S5", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S5" },
+                },
+              },
+              S6: {
+                $cond: {
+                  if: { $eq: ["$S6", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S6" },
+                },
+              },
+              S7: {
+                $cond: {
+                  if: { $eq: ["$S7", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S7" },
+                },
+              },
+              S8: {
+                $cond: {
+                  if: { $eq: ["$S8", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S8" },
+                },
+              },
+              S9: {
+                $cond: {
+                  if: { $eq: ["$S9", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S9" },
+                },
+              },
+              S10: {
+                $cond: {
+                  if: { $eq: ["$S10", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S10" },
+                },
+              },
+              S11: {
+                $cond: {
+                  if: { $eq: ["$S11", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S11" },
+                },
+              },
+              S12: {
+                $cond: {
+                  if: { $eq: ["$S12", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S12" },
+                },
+              },
+              S13: {
+                $cond: {
+                  if: { $eq: ["$S13", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S13" },
+                },
+              },
+              S14: {
+                $cond: {
+                  if: { $eq: ["$S14", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S14" },
+                },
+              },
+              S15: {
+                $cond: {
+                  if: { $eq: ["$S15", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S15" },
+                },
+              },
               day: {
                 $dateToString: {
                   format: "%Y-%m-%d,00:00:00",
@@ -593,21 +864,21 @@ export const getHindalcoAverageReport = async(req,res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1: parseFloat(data.avgS1).toFixed(1),
-                avgS2: parseFloat(data.avgS2).toFixed(1),
-                avgS3: parseFloat(data.avgS3).toFixed(1),
-                avgS4: parseFloat(data.avgS4).toFixed(1),
-                avgS5: parseFloat(data.avgS5).toFixed(1),
-                avgS6: parseFloat(data.avgS6).toFixed(1),
-                avgS7: parseFloat(data.avgS7).toFixed(1),
-                avgS8: parseFloat(data.avgS8).toFixed(1),
-                avgS9: parseFloat(data.avgS9).toFixed(1),
-                avgS10: parseFloat(data.avgS10).toFixed(1),
-                avgS11: parseFloat(data.avgS11).toFixed(1),
-                avgS12: parseFloat(data.avgS12).toFixed(1),
-                avgS13: parseFloat(data.avgS13).toFixed(1),
-                avgS14: parseFloat(data.avgS14).toFixed(1),
-                avgS15: parseFloat(data.avgS15).toFixed(1),
+                avgS1: data.avgS1 !== null ? parseFloat(data.avgS1).toFixed(1) : 'N/A',
+                avgS2: data.avgS2 !== null ? parseFloat(data.avgS2).toFixed(1) : 'N/A',
+                avgS3: data.avgS3 !== null ? parseFloat(data.avgS3).toFixed(1) : 'N/A',
+                avgS4: data.avgS4 !== null ? parseFloat(data.avgS4).toFixed(1) : 'N/A',
+                avgS5: data.avgS5 !== null ? parseFloat(data.avgS5).toFixed(1) : 'N/A',
+                avgS6: data.avgS6 !== null ? parseFloat(data.avgS6).toFixed(1) : 'N/A',
+                avgS7: data.avgS7 !== null ? parseFloat(data.avgS7).toFixed(1) : 'N/A',
+                avgS8: data.avgS8 !== null ? parseFloat(data.avgS8).toFixed(1) : 'N/A',
+                avgS9: data.avgS9 !== null ? parseFloat(data.avgS9).toFixed(1) : 'N/A',
+                avgS10: data.avgS10 !== null ? parseFloat(data.avgS10).toFixed(1) : 'N/A',
+                avgS11: data.avgS11 !== null ? parseFloat(data.avgS11).toFixed(1) : 'N/A',
+                avgS12: data.avgS12 !== null ? parseFloat(data.avgS12).toFixed(1) : 'N/A',
+                avgS13: data.avgS13 !== null ? parseFloat(data.avgS13).toFixed(1) : 'N/A',
+                avgS14: data.avgS14 !== null ? parseFloat(data.avgS14).toFixed(1) : 'N/A',
+                avgS15: data.avgS15 !== null ? parseFloat(data.avgS15).toFixed(1) : 'N/A',
               };
             });
 
@@ -633,21 +904,111 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $project: {
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              S6: { $toInt: "$S6" },
-              S7: { $toInt: "$S7" },
-              S8: { $toInt: "$S8" },
-              S9: { $toInt: "$S9" },
-              S10: { $toInt: "$S10" },
-              S11: { $toInt: "$S11" },
-              S12: { $toInt: "$S12" },
-              S13: { $toInt: "$S13" },
-              S14: { $toInt: "$S14" },
-              S15: { $toInt: "$S15" },
+              S1: {
+                $cond: {
+                  if: { $eq: ["$S1", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S1" },
+                },
+              },
+              S2: {
+                $cond: {
+                  if: { $eq: ["$S2", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S2" },
+                },
+              },
+              S3: {
+                $cond: {
+                  if: { $eq: ["$S3", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S3" },
+                },
+              },
+              S4: {
+                $cond: {
+                  if: { $eq: ["$S4", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S4" },
+                },
+              },
+              S5: {
+                $cond: {
+                  if: { $eq: ["$S5", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S5" },
+                },
+              },
+              S6: {
+                $cond: {
+                  if: { $eq: ["$S6", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S6" },
+                },
+              },
+              S7: {
+                $cond: {
+                  if: { $eq: ["$S7", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S7" },
+                },
+              },
+              S8: {
+                $cond: {
+                  if: { $eq: ["$S8", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S8" },
+                },
+              },
+              S9: {
+                $cond: {
+                  if: { $eq: ["$S9", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S9" },
+                },
+              },
+              S10: {
+                $cond: {
+                  if: { $eq: ["$S10", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S10" },
+                },
+              },
+              S11: {
+                $cond: {
+                  if: { $eq: ["$S11", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S11" },
+                },
+              },
+              S12: {
+                $cond: {
+                  if: { $eq: ["$S12", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S12" },
+                },
+              },
+              S13: {
+                $cond: {
+                  if: { $eq: ["$S13", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S13" },
+                },
+              },
+              S14: {
+                $cond: {
+                  if: { $eq: ["$S14", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S14" },
+                },
+              },
+              S15: {
+                $cond: {
+                  if: { $eq: ["$S15", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S15" },
+                },
+              },
               originalTime: "$Time",
               hour: {
                 $dateToString: {
@@ -739,21 +1100,111 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $project: {
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              S6: { $toInt: "$S6" },
-              S7: { $toInt: "$S7" },
-              S8: { $toInt: "$S8" },
-              S9: { $toInt: "$S9" },
-              S10: { $toInt: "$S10" },
-              S11: { $toInt: "$S11" },
-              S12: { $toInt: "$S12" },
-              S13: { $toInt: "$S13" },
-              S14: { $toInt: "$S14" },
-              S15: { $toInt: "$S15" },
+              S1: {
+                $cond: {
+                  if: { $eq: ["$S1", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S1" },
+                },
+              },
+              S2: {
+                $cond: {
+                  if: { $eq: ["$S2", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S2" },
+                },
+              },
+              S3: {
+                $cond: {
+                  if: { $eq: ["$S3", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S3" },
+                },
+              },
+              S4: {
+                $cond: {
+                  if: { $eq: ["$S4", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S4" },
+                },
+              },
+              S5: {
+                $cond: {
+                  if: { $eq: ["$S5", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S5" },
+                },
+              },
+              S6: {
+                $cond: {
+                  if: { $eq: ["$S6", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S6" },
+                },
+              },
+              S7: {
+                $cond: {
+                  if: { $eq: ["$S7", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S7" },
+                },
+              },
+              S8: {
+                $cond: {
+                  if: { $eq: ["$S8", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S8" },
+                },
+              },
+              S9: {
+                $cond: {
+                  if: { $eq: ["$S9", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S9" },
+                },
+              },
+              S10: {
+                $cond: {
+                  if: { $eq: ["$S10", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S10" },
+                },
+              },
+              S11: {
+                $cond: {
+                  if: { $eq: ["$S11", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S11" },
+                },
+              },
+              S12: {
+                $cond: {
+                  if: { $eq: ["$S12", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S12" },
+                },
+              },
+              S13: {
+                $cond: {
+                  if: { $eq: ["$S13", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S13" },
+                },
+              },
+              S14: {
+                $cond: {
+                  if: { $eq: ["$S14", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S14" },
+                },
+              },
+              S15: {
+                $cond: {
+                  if: { $eq: ["$S15", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S15" },
+                },
+              },
               originalTime: "$Time",
               minute: {
                 $dateToString: {
@@ -845,21 +1296,111 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $project: {
-              S1: { $toInt: "$S1" },
-              S2: { $toInt: "$S2" },
-              S3: { $toInt: "$S3" },
-              S4: { $toInt: "$S4" },
-              S5: { $toInt: "$S5" },
-              S6: { $toInt: "$S6" },
-              S7: { $toInt: "$S7" },
-              S8: { $toInt: "$S8" },
-              S9: { $toInt: "$S9" },
-              S10: { $toInt: "$S10" },
-              S11: { $toInt: "$S11" },
-              S12: { $toInt: "$S12" },
-              S13: { $toInt: "$S13" },
-              S14: { $toInt: "$S14" },
-              S15: { $toInt: "$S15" },
+              S1: {
+                $cond: {
+                  if: { $eq: ["$S1", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S1" },
+                },
+              },
+              S2: {
+                $cond: {
+                  if: { $eq: ["$S2", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S2" },
+                },
+              },
+              S3: {
+                $cond: {
+                  if: { $eq: ["$S3", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S3" },
+                },
+              },
+              S4: {
+                $cond: {
+                  if: { $eq: ["$S4", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S4" },
+                },
+              },
+              S5: {
+                $cond: {
+                  if: { $eq: ["$S5", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S5" },
+                },
+              },
+              S6: {
+                $cond: {
+                  if: { $eq: ["$S6", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S6" },
+                },
+              },
+              S7: {
+                $cond: {
+                  if: { $eq: ["$S7", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S7" },
+                },
+              },
+              S8: {
+                $cond: {
+                  if: { $eq: ["$S8", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S8" },
+                },
+              },
+              S9: {
+                $cond: {
+                  if: { $eq: ["$S9", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S9" },
+                },
+              },
+              S10: {
+                $cond: {
+                  if: { $eq: ["$S10", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S10" },
+                },
+              },
+              S11: {
+                $cond: {
+                  if: { $eq: ["$S11", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S11" },
+                },
+              },
+              S12: {
+                $cond: {
+                  if: { $eq: ["$S12", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S12" },
+                },
+              },
+              S13: {
+                $cond: {
+                  if: { $eq: ["$S13", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S13" },
+                },
+              },
+              S14: {
+                $cond: {
+                  if: { $eq: ["$S14", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S14" },
+                },
+              },
+              S15: {
+                $cond: {
+                  if: { $eq: ["$S15", "N/A"] },
+                  then: null,
+                  else: { $toInt: "$S15" },
+                },
+              },
               originalTime: "$Time",
               day: {
                 $dateToString: {
@@ -871,7 +1412,7 @@ export const getHindalcoAverageReport = async(req,res) => {
           },
           {
             $group: {
-              _id: "$day", 
+              _id: "$day",
               firstDocument: { $first: "$$ROOT" }, // Get the first document in each minute
             },
           },

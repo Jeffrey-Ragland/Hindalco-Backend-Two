@@ -483,6 +483,138 @@ export const getHindalcoAverageReport = async(req,res) => {
         } else {
           res.json({ success: false, message: "Data not found" });
         }
+      } 
+      
+      else if (averageOption === "day") {
+        const hindalcoAverageData = await hindalcoTimeModel.aggregate([
+          {
+            $match: {
+              DeviceName: projectName,
+            },
+          },
+          {
+            $project: {
+              S1: { $toInt: "$S1" },
+              S2: { $toInt: "$S2" },
+              S3: { $toInt: "$S3" },
+              S4: { $toInt: "$S4" },
+              S5: { $toInt: "$S5" },
+              S6: { $toInt: "$S6" },
+              S7: { $toInt: "$S7" },
+              S8: { $toInt: "$S8" },
+              S9: { $toInt: "$S9" },
+              S10: { $toInt: "$S10" },
+              S11: { $toInt: "$S11" },
+              S12: { $toInt: "$S12" },
+              S13: { $toInt: "$S13" },
+              S14: { $toInt: "$S14" },
+              S15: { $toInt: "$S15" },
+              day: {
+                $dateToString: {
+                  format: "%Y-%m-%d,00:00:00",
+                  date: { $dateFromString: { dateString: "$Time" } },
+                },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$day",
+              avgS1: { $avg: "$S1" },
+              avgS2: { $avg: "$S2" },
+              avgS3: { $avg: "$S3" },
+              avgS4: { $avg: "$S4" },
+              avgS5: { $avg: "$S5" },
+              avgS6: { $avg: "$S6" },
+              avgS7: { $avg: "$S7" },
+              avgS8: { $avg: "$S8" },
+              avgS9: { $avg: "$S9" },
+              avgS10: { $avg: "$S10" },
+              avgS11: { $avg: "$S11" },
+              avgS12: { $avg: "$S12" },
+              avgS13: { $avg: "$S13" },
+              avgS14: { $avg: "$S14" },
+              avgS15: { $avg: "$S15" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              dateRange: {
+                $concat: [
+                  "$_id",
+                  " to ",
+                  {
+                    $dateToString: {
+                      format: "%Y-%m-%d,00:00:00",
+                      date: {
+                        $dateAdd: {
+                          startDate: {
+                            $dateFromString: { dateString: "$_id" },
+                          },
+                          unit: "day",
+                          amount: 1,
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+              avgS1: 1,
+              avgS2: 1,
+              avgS3: 1,
+              avgS4: 1,
+              avgS5: 1,
+              avgS6: 1,
+              avgS7: 1,
+              avgS8: 1,
+              avgS9: 1,
+              avgS10: 1,
+              avgS11: 1,
+              avgS12: 1,
+              avgS13: 1,
+              avgS14: 1,
+              avgS15: 1,
+            },
+          },
+          {
+            $sort: { dateRange: -1 },
+          },
+        ]);
+
+        if (hindalcoAverageData.length > 0) {
+          const filteredData = hindalcoAverageData
+            .filter((data) => {
+              const dbDate = data.dateRange.split(" to ")[0];
+              return (
+                dbDate >= formattedAvgFromDate && dbDate < formattedAvgToDate
+              );
+            })
+            .map((data) => {
+              return {
+                ...data,
+                avgS1: parseFloat(data.avgS1).toFixed(1),
+                avgS2: parseFloat(data.avgS2).toFixed(1),
+                avgS3: parseFloat(data.avgS3).toFixed(1),
+                avgS4: parseFloat(data.avgS4).toFixed(1),
+                avgS5: parseFloat(data.avgS5).toFixed(1),
+                avgS6: parseFloat(data.avgS6).toFixed(1),
+                avgS7: parseFloat(data.avgS7).toFixed(1),
+                avgS8: parseFloat(data.avgS8).toFixed(1),
+                avgS9: parseFloat(data.avgS9).toFixed(1),
+                avgS10: parseFloat(data.avgS10).toFixed(1),
+                avgS11: parseFloat(data.avgS11).toFixed(1),
+                avgS12: parseFloat(data.avgS12).toFixed(1),
+                avgS13: parseFloat(data.avgS13).toFixed(1),
+                avgS14: parseFloat(data.avgS14).toFixed(1),
+                avgS15: parseFloat(data.avgS15).toFixed(1),
+              };
+            });
+
+          res.json({ success: true, data: filteredData });
+        } else {
+          res.json({ success: false, message: "Data not found" });
+        }
       }
     } 
 
@@ -492,7 +624,7 @@ export const getHindalcoAverageReport = async(req,res) => {
       const formattedIntervalFromDate = intervalFromDate + ",00:00:00";
       const formattedIntervalToDate = intervalToDate + ",23:59:59";
 
-      if(intervalOption === 'hour') {
+      if (intervalOption === "hour") {
         const hindalcoHourlyData = await hindalcoTimeModel.aggregate([
           {
             $match: {
@@ -552,7 +684,7 @@ export const getHindalcoAverageReport = async(req,res) => {
               S13: 1,
               S14: 1,
               S15: 1,
-              Time:"$originalTime", // Include hour if needed
+              Time: "$originalTime", // Include hour if needed
             },
           },
         ]);
@@ -598,9 +730,7 @@ export const getHindalcoAverageReport = async(req,res) => {
         } else {
           res.json({ success: false, message: "Data not found" });
         }
-      }
-
-      else if(intervalOption === 'minute') {
+      } else if (intervalOption === "minute") {
         const hindalcoMinuteData = await hindalcoTimeModel.aggregate([
           {
             $match: {
@@ -673,6 +803,112 @@ export const getHindalcoAverageReport = async(req,res) => {
                 dbDate < formattedIntervalToDate
               );
             })
+            .sort((a, b) => {
+              const [dateA, timeA] = a.Time.split(",");
+              const [dateB, timeB] = b.Time.split(",");
+
+              const [yearA, monthA, dayA] = dateA.split("-").map(Number);
+              const [hourA, minuteA, secondA] = timeA.split(":").map(Number);
+
+              const [yearB, monthB, dayB] = dateB.split("-").map(Number);
+              const [hourB, minuteB, secondB] = timeB.split(":").map(Number);
+
+              const aNumeric =
+                yearA * 10000000000 +
+                monthA * 100000000 +
+                dayA * 1000000 +
+                hourA * 10000 +
+                minuteA * 100 +
+                secondA;
+              const bNumeric =
+                yearB * 10000000000 +
+                monthB * 100000000 +
+                dayB * 1000000 +
+                hourB * 10000 +
+                minuteB * 100 +
+                secondB;
+
+              return bNumeric - aNumeric;
+            });
+          res.json({ success: true, data: filteredData });
+        } else {
+          res.json({ success: false, message: "Data not found" });
+        }
+      } 
+      
+      else if (intervalOption === "day") {
+        const hindalcoDailyData = await hindalcoTimeModel.aggregate([
+          {
+            $match: {
+              DeviceName: projectName,
+            },
+          },
+          {
+            $project: {
+              S1: { $toInt: "$S1" },
+              S2: { $toInt: "$S2" },
+              S3: { $toInt: "$S3" },
+              S4: { $toInt: "$S4" },
+              S5: { $toInt: "$S5" },
+              S6: { $toInt: "$S6" },
+              S7: { $toInt: "$S7" },
+              S8: { $toInt: "$S8" },
+              S9: { $toInt: "$S9" },
+              S10: { $toInt: "$S10" },
+              S11: { $toInt: "$S11" },
+              S12: { $toInt: "$S12" },
+              S13: { $toInt: "$S13" },
+              S14: { $toInt: "$S14" },
+              S15: { $toInt: "$S15" },
+              originalTime: "$Time",
+              day: {
+                $dateToString: {
+                  format: "%Y-%m-%d,00:00:00",
+                  date: { $dateFromString: { dateString: "$Time" } },
+                },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$day", 
+              firstDocument: { $first: "$$ROOT" }, // Get the first document in each minute
+            },
+          },
+          {
+            $replaceRoot: { newRoot: "$firstDocument" }, // Replace the root with the first document
+          },
+          {
+            $project: {
+              _id: 0, // Exclude the _id field
+              S1: 1,
+              S2: 1,
+              S3: 1,
+              S4: 1,
+              S5: 1,
+              S6: 1,
+              S7: 1,
+              S8: 1,
+              S9: 1,
+              S10: 1,
+              S11: 1,
+              S12: 1,
+              S13: 1,
+              S14: 1,
+              S15: 1,
+              Time: "$originalTime", // Include minute if needed
+            },
+          },
+        ]);
+        if (hindalcoDailyData.length > 0) {
+          const filteredData = hindalcoDailyData
+            .filter((data) => {
+              const dbDate = data.Time;
+              return (
+                dbDate >= formattedIntervalFromDate &&
+                dbDate < formattedIntervalToDate
+              );
+            }) 
             .sort((a, b) => {
               const [dateA, timeA] = a.Time.split(",");
               const [dateB, timeB] = b.Time.split(",");

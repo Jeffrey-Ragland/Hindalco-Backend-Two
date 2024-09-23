@@ -25,7 +25,7 @@ def send_data():
         
         print(response.status_code, response.text)
         
-        time.sleep(10)
+        time.sleep(1)
 
 if __name__ == "__main__":
     send_data()

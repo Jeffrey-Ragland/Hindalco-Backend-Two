@@ -406,7 +406,7 @@ export const getHindalcoAverageReport = async(req,res) => {
             },
           },
           {
-            $sort: { dateRange: 1 },
+            $sort: { dateRange: -1 },
           },
         ]);
 

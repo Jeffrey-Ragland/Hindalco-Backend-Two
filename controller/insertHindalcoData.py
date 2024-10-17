@@ -50,7 +50,7 @@ def format_time():
     return now.strftime('%y/%m/%d,%H:%M:%S')
 
 def send_data():
-    base_url = "http://localhost:4000/backend/insertHindalcoData"
+    base_url = "http://13.202.211.76:4000/backend/insertHindalcoData"
     while True:
         s_data = generate_data()
         device_temperature = round(random.uniform(0.0, 100.0), 1)

@@ -40,7 +40,7 @@ import random
 
 def generate_data():
     # Generate data for s1 to s10
-    s_data = [random.randint(40, 80) for _ in range(10)]
+    s_data = [random.randint(10, 90) for _ in range(10)]
     # Add 'N/A' for s11 to s15
     s_data.extend(['N/A'] * 5)
     return s_data

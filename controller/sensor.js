@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import loginModel from "../models/loginModel.js";
 import hindalcoModel from "../models/hindalcoModel.js";
 import hindalcoTimeModel from "../models/hindalcoTimeModel.js";
+import axios from "axios";
 
 // http://localhost:4000/backend/hindalcoSignup?Username=[username]&Password=[password]
 export const signup = (req, res) => {
@@ -70,23 +71,24 @@ export const validateToken = (req,res) => {
 
 // http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89&time=24/09/18,00:25:30
 
+// http://13.202.211.76:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89&time=24/09/18,00:25:30
 
-export const insertHindalcoData = async (req,res) => {
-  const {deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery, time} = req.query;
 
-  if ( !deviceName || !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13|| !s14 || !s15 || !deviceTemperature || !deviceSignal || !deviceBattery  || !time) {
-    return res.status(400).json({ error: 'Missing required parameters'});
+export const insertHindalcoData = async (req, res) => {
+  const { deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery, time} = req.query;
+
+  if ( !deviceName || !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13 || !s14 || !s15 || !deviceTemperature || !deviceSignal || !deviceBattery || !time || time === '0' ) {
+    return res.status(400).json({ error: "Missing required parameters; time cant be zero" });
   }
 
-  
-  const [date,zone] = time.split(" ");
+  const [date, zone] = time.split(" ");
   const [datePart, timePart] = date.split(",");
   const [year, month, day] = datePart.split("/");
   const [hour, minute, second] = timePart.split(":");
 
-  const fullYear = `20${year}`
+  const fullYear = `20${year}`;
 
-  const timestamp =`${fullYear}-${month}-${day},${hour}:${minute}:${second}`
+  const timestamp = `${fullYear}-${month}-${day},${hour}:${minute}:${second}`;
 
   try {
     const hindalcoData = {
@@ -112,11 +114,24 @@ export const insertHindalcoData = async (req,res) => {
       Time: timestamp,
     };
     await hindalcoTimeModel.create(hindalcoData);
-    // await hindalcoModel.create(hindalcoData);
-    res.status(200).json({ message: 'Data inserted successfully' });
+
+
+    try {
+      const backupAPIResponse = await axios.get(
+        `http://43.204.133.45:4000/sensor/insertHindalcoData?deviceName=${deviceName}&s1=${s1}&s2=${s2}&s3=${s3}&s4=${s4}&s5=${s5}&s6=${s6}&s7=${s7}&s8=${s8}&s9=${s9}&s10=${s10}&s11=${s11}&s12=${s12}&s13=${s13}&s14=${s14}&s15=${s15}&deviceTemperature=${deviceTemperature}&deviceSignal=${deviceSignal}&deviceBattery=${deviceBattery}&time=${timestamp}`
+      );
+
+      if(backupAPIResponse.status === 200) {
+        res.status(200).json({ message: "Data inserted successfully and api success" });
+      } else {
+        console.log('Backup API failed');
+      }
+    } catch(backupAPIError) {
+      res.status(500).json({message: 'Backup api failed'});
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message })
-  };
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export const getHindalcoData = async (req, res) => {

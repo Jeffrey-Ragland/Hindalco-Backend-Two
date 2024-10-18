@@ -67,28 +67,37 @@ export const validateToken = (req,res) => {
 };
 
 // insert link
-// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]&deviceTemperature=[deviceTemperature]&deviceSignal=[deviceSignal]&deviceBattery=[deviceBattery]&time=[time]
+// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]&deviceTemperature=[deviceTemperature]&deviceSignal=[deviceSignal]&deviceBattery=[deviceBattery]
 
-// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89&time=24/09/18,00:25:30
+// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
 
-// http://13.202.211.76:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89&time=24/09/18,00:25:30
+// http://13.202.211.76:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
 
 
 export const insertHindalcoData = async (req, res) => {
-  const { deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery, time} = req.query;
+  const { deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery } = req.query;
 
-  if ( !deviceName || !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13 || !s14 || !s15 || !deviceTemperature || !deviceSignal || !deviceBattery || !time || time === '0' ) {
-    return res.status(400).json({ error: "Missing required parameters; time cant be zero" });
+  if ( !deviceName || !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13 || !s14 || !s15 || !deviceTemperature || !deviceSignal || !deviceBattery ) {
+    return res.status(400).json({ error: "Missing required parameters" });
   }
 
-  const [date, zone] = time.split(" ");
-  const [datePart, timePart] = date.split(",");
-  const [year, month, day] = datePart.split("/");
-  const [hour, minute, second] = timePart.split(":");
+  const dateTime = new Date();
+  const kolkataTime = dateTime.toLocaleString('en-US', {timeZone: 'Asia/Kolkata', hour12: false});
 
-  const fullYear = `20${year}`;
+  const [datePart, timePart] = kolkataTime.split(',');
+  const trimmedTimePart = timePart.trim(); 
+  const [month, date, year] = datePart.split("/");
+  const [hour, minute, second] = trimmedTimePart.split(":");
 
-  const timestamp = `${fullYear}-${month}-${day},${hour}:${minute}:${second}`;
+  // const [date, zone] = time.split(" ");
+  // const [datePart, timePart] = date.split(",");
+  // const [year, month, day] = datePart.split("/");
+  // const [hour, minute, second] = timePart.split(":");
+
+  // const fullYear = `20${year}`;
+
+  const timestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+  // console.log('timestamp', timestamp);
 
   try {
     const hindalcoData = {

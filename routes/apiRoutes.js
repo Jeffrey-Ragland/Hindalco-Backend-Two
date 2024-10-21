@@ -7,7 +7,8 @@ import {
   getHindalcoData,
   getHindalcoReport,
   getHindalcoAverageReport,
-  updateHindalcoProcess
+  updateHindalcoProcess,
+  getHindalcoProcess
 } from "../controller/sensor.js";
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get("/getHindalcoData", getHindalcoData);
 router.get("/getHindalcoReport", getHindalcoReport);
 router.get("/getHindalcoAverageReport", getHindalcoAverageReport);
 router.post("/updateHindalcoProcess", updateHindalcoProcess);
+router.get("/getHindalcoProcess", getHindalcoProcess);
 
 export default router;

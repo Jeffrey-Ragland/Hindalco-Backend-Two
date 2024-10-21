@@ -167,12 +167,144 @@ export const getHindalcoData = async (req, res) => {
 
 export const updateHindalcoProcess = async (req, res) => {
   const {processStatus} = req.body;
-  console.log(processStatus);
+
+  const dateTime = new Date();
+  const kolkataTime = dateTime.toLocaleString('en-US', {timeZone: 'Asia/Kolkata', hour12: false});
+
+  const [datePart, timePart] = kolkataTime.split(",");
+  const trimmedTimePart = timePart.trim();
+  const [month, date, year] = datePart.split("/");
+  const [hour, minute, second] = trimmedTimePart.split(":");
+
+  const timestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+  
+  console.log('process status',processStatus);
+  console.log('timestamp', timestamp);
   try {
-    await hindalcoProcessModel.findOneAndUpdate({}, {$set: {ProcessStatus: processStatus}}, {new: true, upsert: true});
+    await hindalcoProcessModel.findOneAndUpdate(
+      {},
+      { $set: { ProcessStatus: processStatus, Time: timestamp } },
+      { new: true, upsert: true }
+    );
     res.status(200).send('Process updated successfully')
   } catch(error) {
     res.status(500).send(error)
+  }
+};
+
+// http://localhost:4000/backend/getHindalcoProcess
+// export const getHindalcoProcess = async(req, res) => {
+//  try {
+//   const hindalcoProcess = await hindalcoProcessModel.findOne({});
+//   if(!hindalcoProcess) {
+//     return res.status(404).send('Process status not found');
+//   }
+//   res.status(200).json({success: true, data: hindalcoProcess});
+//  } catch(error) {
+//   res.status(500).send('Error fetching hindalco process');
+//  }
+// };
+
+export const getHindalcoProcess = async (req, res) => {
+  // console.log('get hindalco process triggered');
+  try { 
+
+    const emptyGraphData = [];
+
+    const hindalcoProcess = await hindalcoProcessModel.findOne({});
+    if(!hindalcoProcess) {
+      return res.status(404).send("Process status not found");
+      // console.log("hindalco process", hindalcoProcess);
+    }
+    // console.log("hindalco process", hindalcoProcess);
+    if(hindalcoProcess.ProcessStatus === 'Start') {
+      // console.log('process status is start')
+      const hindalcoData = await hindalcoTimeModel
+        .find({ DeviceName: "XY001" })
+        .sort({ _id: -1 })
+        .limit(300)
+        .select({ __v: 0, updatedAt: 0, DeviceName: 0, DeviceBattery: 0, DeviceSignal: 0, DeviceTemperature: 0 });
+
+        // console.log('hindalco data', hindalcoData[0].Time);
+        // const startTime = hindalcoProcess.Time;
+        // const lastDataTime = hindalcoData[0].Time;
+
+        // const lastDataTimeObj = new Date(lastDataTime.replace(',', 'T'));
+        // const processTimeObj = new Date(hindalcoProcess.Time.replace(",", "T"));
+
+        // console.log("lastDataTimeObj", lastDataTimeObj);
+        // console.log("processTimeObj", processTimeObj);
+
+        // const elapsedTime = lastDataTimeObj - processTimeObj;
+
+        // const elapsedTimeInSeconds = elapsedTime / 1000;
+
+        // console.log('elapsed time in seconds', elapsedTimeInSeconds);
+
+        // console.log("difference in time", lastDataTime - hindalcoProcess.Time);
+
+        const processTimeISO = hindalcoProcess.Time.replace(',', 'T');
+
+        const processTime = new Date(processTimeISO);
+
+        const processTimePlus51seconds = new Date(processTime.getTime() + 51 * 1000);
+
+        const localeTimePlus51seconds = processTimePlus51seconds.toLocaleString('en-US', {timeZone: 'Asia/Kolkata', hour12: false});
+
+        // console.log("process start time", hindalcoProcess.Time);
+
+        // console.log('51 seconds added time', localeTimePlus51seconds);
+
+        const dateTime = new Date();
+        const kolkataTime = dateTime.toLocaleString("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour12: false,
+        });
+
+        const [datePart, timePart] = kolkataTime.split(",");
+        const trimmedTimePart = timePart.trim();
+        const [month, date, year] = datePart.split("/");
+        const [hour, minute, second] = trimmedTimePart.split(":");
+
+        const currentTimestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+
+        const [datePart2, timePart2] = localeTimePlus51seconds.split(",");
+        const trimmedTimePart2 = timePart2.trim();
+        const [month2, date2, year2] = datePart2.split("/");
+        const [hour2, minute2, second2] = trimmedTimePart2.split(":");
+
+        const localeProcessTimePlus51seconds = `${year2}-${month2}-${date2},${hour2}:${minute2}:${second2}`;
+
+        console.log("currentTimestamp", currentTimestamp);
+        console.log("localeProcessTimePlus51seconds", localeProcessTimePlus51seconds);
+
+
+        // console.log("startTime", hindalcoProcess.Time);
+        // console.log("lastDataTime", lastDataTime);
+
+        if(hindalcoData && (localeProcessTimePlus51seconds >= currentTimestamp)) {
+          const filteredData = hindalcoData.filter((data) => {
+            const dbDate = data.Time;
+            return dbDate >= hindalcoProcess.Time;
+          })
+
+          // console.log('data after processtime', filteredData);
+          res.status(200).json({ success: true, data: filteredData });
+        }
+
+        else {
+          res.status(200).json({success: true, data: emptyGraphData})
+        }
+
+    }
+    else if (hindalcoProcess.ProcessStatus === 'Stop') {
+      res.status(200).json({ success: true, data: emptyGraphData });
+    }
+      
+    
+  } catch (error) {
+    res.status(500).send("Error fetching hindalco process");
+    console.log(error)
   }
 };
 

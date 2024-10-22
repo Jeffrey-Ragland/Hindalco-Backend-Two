@@ -311,7 +311,23 @@ export const updateHindalcoProcess = async (req, res) => {
 export const getHindalcoProcess = async (req, res) => {
   try {
 
+    const hindalcoDateRange = await hindalcoProcessModelTwo
+      .find({ DeviceName: "XY001" })
+      .sort({ _id: -1 })
+      .select({ __v: 0, DeviceName: 0 });
 
+    // console.log('hindalco date range', hindalcoDateRange);
+
+    let dateRangeArray = [];
+
+    hindalcoDateRange.forEach((entry) => {
+      const stopTime = entry.ActualStopTime !== "" ? entry.ActualStopTime : entry.AutoStopTime;
+
+      dateRangeArray.push({
+        startTime: entry.StartTime,
+        stopTime: stopTime
+      });
+    });
 
     const hindalcoProcess = await hindalcoProcessModel.findOne({});
     if (!hindalcoProcess) {
@@ -375,15 +391,15 @@ export const getHindalcoProcess = async (req, res) => {
           return dbDate >= startTime && dbDate <= stopTime;
         });
 
-        res.status(200).json({ success: true, data: filteredData, inTimeRange: true });
+        res.status(200).json({ success: true, data: filteredData, inTimeRange: true, dateRange: dateRangeArray });
       } else {
         //out of time range condition
         console.log("out of range loop triggered");
-        res.status(200).json({ success: true, inTimeRange: false });
+        res.status(200).json({ success: true, inTimeRange: false, dateRange: dateRangeArray });
       }
     } // stop condition
     else if (hindalcoProcess.ProcessStatus === "Stop") {
-      res.status(200).json({ success: false, inTimeRange: false });
+      res.status(200).json({ success: false, inTimeRange: false, dateRange: dateRangeArray });
     }
   } catch (error) {
     res.status(500).send("Error fetching hindalco process");

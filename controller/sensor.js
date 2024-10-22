@@ -1,25 +1,27 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import loginModel from "../models/loginModel.js";
-import hindalcoModel from "../models/hindalcoModel.js";
 import hindalcoTimeModel from "../models/hindalcoTimeModel.js";
 import hindalcoProcessModel from "../models/hindalcoProcessModel.js";
+import hindalcoProcessModelTwo from "../models/hindalcoProcessModelTwo.js";
 import axios from "axios";
 
 // http://localhost:4000/backend/hindalcoSignup?Username=[username]&Password=[password]
 export const signup = (req, res) => {
-    const {Username, Password} = req.query;
-    bcrypt.hash(Password, 10)
-    .then(hash => {
-        loginModel.create({Username, Password: hash})
-        .then(info => res.json(info))
-        .catch(err => res.json(err))
+  const { Username, Password } = req.query;
+  bcrypt
+    .hash(Password, 10)
+    .then((hash) => {
+      loginModel
+        .create({ Username, Password: hash })
+        .then((info) => res.json(info))
+        .catch((err) => res.json(err));
     })
-    .catch(error => console.log(error));
+    .catch((error) => console.log(error));
 };
 
 export const login = (req, res) => {
-  const { Username, Password } = req.body; 
+  const { Username, Password } = req.body;
   loginModel
     .findOne({ Username })
     .then((user) => {
@@ -47,24 +49,23 @@ export const login = (req, res) => {
 };
 
 // token validation
-export const validateToken = (req,res) => {
-  const token = req.headers["authorization"];  
-//   if (!token) {
-//     return res.status(401).json({ valid: false });
-//   }
+export const validateToken = (req, res) => {
+  const token = req.headers["authorization"];
+  //   if (!token) {
+  //     return res.status(401).json({ valid: false });
+  //   }
 
   jwt.verify(token, "jwt-secret-key-123", (err, user) => {
     if (err) {
       return res.status(403).json({ valid: false });
-    }
-    else {
-        res.json({ valid: true });
+    } else {
+      res.json({ valid: true });
     }
   });
 
-//   if (!token) {
-//     return res.json({ valid: false });
-//   }
+  //   if (!token) {
+  //     return res.json({ valid: false });
+  //   }
 };
 
 // insert link
@@ -74,19 +75,61 @@ export const validateToken = (req,res) => {
 
 // http://13.202.211.76:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
 
-
 export const insertHindalcoData = async (req, res) => {
-  const { deviceName, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, deviceTemperature, deviceSignal, deviceBattery } = req.query;
+  const {
+    deviceName,
+    s1,
+    s2,
+    s3,
+    s4,
+    s5,
+    s6,
+    s7,
+    s8,
+    s9,
+    s10,
+    s11,
+    s12,
+    s13,
+    s14,
+    s15,
+    deviceTemperature,
+    deviceSignal,
+    deviceBattery,
+  } = req.query;
 
-  if ( !deviceName || !s1 || !s2 || !s3 || !s4 || !s5 || !s6 || !s7 || !s8 || !s9 || !s10 || !s11 || !s12 || !s13 || !s14 || !s15 || !deviceTemperature || !deviceSignal || !deviceBattery ) {
+  if (
+    !deviceName ||
+    !s1 ||
+    !s2 ||
+    !s3 ||
+    !s4 ||
+    !s5 ||
+    !s6 ||
+    !s7 ||
+    !s8 ||
+    !s9 ||
+    !s10 ||
+    !s11 ||
+    !s12 ||
+    !s13 ||
+    !s14 ||
+    !s15 ||
+    !deviceTemperature ||
+    !deviceSignal ||
+    !deviceBattery
+  ) {
     return res.status(400).json({ error: "Missing required parameters" });
   }
 
   const dateTime = new Date();
-  const kolkataTime = dateTime.toLocaleString('en-US', {timeZone: 'Asia/Kolkata', hour12: false});
+  const kolkataTime = dateTime.toLocaleString("en-US", {
+    timeZone: "Asia/Kolkata",
+    hour12: false,
+  });
 
-  const [datePart, timePart] = kolkataTime.split(',');
-  const trimmedTimePart = timePart.trim(); 
+  const [datePart, timePart] = kolkataTime.split(",");
+  const trimmedTimePart = timePart.trim();
   const [month, date, year] = datePart.split("/");
   const [hour, minute, second] = trimmedTimePart.split(":");
 
@@ -125,19 +168,20 @@ export const insertHindalcoData = async (req, res) => {
     };
     await hindalcoTimeModel.create(hindalcoData);
 
-
     try {
       const backupAPIResponse = await axios.get(
         `http://43.204.133.45:4000/sensor/insertHindalcoData?deviceName=${deviceName}&s1=${s1}&s2=${s2}&s3=${s3}&s4=${s4}&s5=${s5}&s6=${s6}&s7=${s7}&s8=${s8}&s9=${s9}&s10=${s10}&s11=${s11}&s12=${s12}&s13=${s13}&s14=${s14}&s15=${s15}&deviceTemperature=${deviceTemperature}&deviceSignal=${deviceSignal}&deviceBattery=${deviceBattery}&time=${timestamp}`
       );
 
-      if(backupAPIResponse.status === 200) {
-        res.status(200).json({ message: "Data inserted successfully and api success" });
+      if (backupAPIResponse.status === 200) {
+        res
+          .status(200)
+          .json({ message: "Data inserted successfully and api success" });
       } else {
-        console.log('Backup API failed');
+        console.log("Backup API failed");
       }
-    } catch(backupAPIError) {
-      res.status(500).json({message: 'Backup api failed'});
+    } catch (backupAPIError) {
+      res.status(500).json({ message: "Backup api failed" });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -149,7 +193,7 @@ export const getHindalcoData = async (req, res) => {
     const limit = parseInt(req.query.limit);
 
     const hindalcoData = await hindalcoTimeModel
-    // const hindalcoData = await hindalcoModel
+      // const hindalcoData = await hindalcoModel
       .find({ DeviceName: "XY001" }) //static device number
       .sort({ _id: -1 })
       .limit(limit)
@@ -166,149 +210,188 @@ export const getHindalcoData = async (req, res) => {
 };
 
 export const updateHindalcoProcess = async (req, res) => {
-  const {processStatus} = req.body;
+  const { processStatus } = req.body;
 
-  const dateTime = new Date();
-  const kolkataTime = dateTime.toLocaleString('en-US', {timeZone: 'Asia/Kolkata', hour12: false});
+  if (processStatus === "Start") {
+    const currentDateTime = new Date();
+    const kolkataTime = currentDateTime.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
 
-  const [datePart, timePart] = kolkataTime.split(",");
-  const trimmedTimePart = timePart.trim();
-  const [month, date, year] = datePart.split("/");
-  const [hour, minute, second] = trimmedTimePart.split(":");
+    const calculatedStopTimeObj = new Date(
+      currentDateTime.getTime() + 51 * 1000
+    ); //calculate stop time
 
-  const timestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
-  
-  console.log('process status',processStatus);
-  console.log('timestamp', timestamp);
-  try {
-    await hindalcoProcessModel.findOneAndUpdate(
-      {},
-      { $set: { ProcessStatus: processStatus, Time: timestamp } },
-      { new: true, upsert: true }
+    const calculatedStopTimeLocal = calculatedStopTimeObj.toLocaleString(
+      "en-US",
+      { timeZone: "Asia/Kolkata", hour12: false }
     );
-    res.status(200).send('Process updated successfully')
-  } catch(error) {
-    res.status(500).send(error)
+
+    const [datePart, timePart] = kolkataTime.split(",");
+    const trimmedTimePart = timePart.trim();
+    const [month, date, year] = datePart.split("/");
+    const [hour, minute, second] = trimmedTimePart.split(":");
+
+    const buttonClickedTime = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+
+    const [datePart2, timePart2] = calculatedStopTimeLocal.split(",");
+    const trimmedTimePart2 = timePart2.trim();
+    const [month2, date2, year2] = datePart2.split("/");
+    const [hour2, minute2, second2] = trimmedTimePart2.split(":");
+    //  to convert local stop time to our custom format
+    const calculatedStopTimeCustom = `${year2}-${month2}-${date2},${hour2}:${minute2}:${second2}`;
+
+    try {
+      await hindalcoProcessModel.findOneAndUpdate(
+        {},
+        {
+          $set: {
+            DeviceName: "XY001",
+            ProcessStatus: processStatus,
+            ButtonClickedTime: buttonClickedTime,
+          },
+        },
+        { new: true, upsert: true }
+      );
+
+      const processData = {
+        DeviceName: "XY001",
+        StartTime: buttonClickedTime,
+        AutoStopTime: calculatedStopTimeCustom,
+        ActualStopTime: "",
+      };
+
+      await hindalcoProcessModelTwo.create(processData);
+
+      res.status(200).send("Process updated successfully");
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  } else if (processStatus === "Stop") {
+    const currentDateTime = new Date();
+    const kolkataTime = currentDateTime.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
+
+    const [datePart, timePart] = kolkataTime.split(",");
+    const trimmedTimePart = timePart.trim();
+    const [month, date, year] = datePart.split("/");
+    const [hour, minute, second] = trimmedTimePart.split(":");
+
+    const buttonClickedTime = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+
+    try {
+      await hindalcoProcessModel.findOneAndUpdate(
+        {},
+        {
+          $set: {
+            DeviceName: "XY001",
+            ProcessStatus: processStatus,
+            ButtonClickedTime: buttonClickedTime,
+          },
+        },
+        { new: true, upsert: true }
+      );
+
+      await hindalcoProcessModelTwo.findOneAndUpdate(
+        {},
+        { $set: { ActualStopTime: buttonClickedTime } },
+        { sort: { _id: -1 }, new: true }
+      );
+
+      res.status(200).send("Process updated successfully");
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
 };
 
-// http://localhost:4000/backend/getHindalcoProcess
-// export const getHindalcoProcess = async(req, res) => {
-//  try {
-//   const hindalcoProcess = await hindalcoProcessModel.findOne({});
-//   if(!hindalcoProcess) {
-//     return res.status(404).send('Process status not found');
-//   }
-//   res.status(200).json({success: true, data: hindalcoProcess});
-//  } catch(error) {
-//   res.status(500).send('Error fetching hindalco process');
-//  }
-// };
-
 export const getHindalcoProcess = async (req, res) => {
-  // console.log('get hindalco process triggered');
-  try { 
+  try {
 
-    const emptyGraphData = [];
+
 
     const hindalcoProcess = await hindalcoProcessModel.findOne({});
-    if(!hindalcoProcess) {
+    if (!hindalcoProcess) {
       return res.status(404).send("Process status not found");
-      // console.log("hindalco process", hindalcoProcess);
     }
-    // console.log("hindalco process", hindalcoProcess);
-    if(hindalcoProcess.ProcessStatus === 'Start') {
-      // console.log('process status is start')
+
+    console.log("Process Status", hindalcoProcess.ProcessStatus);
+
+    if (hindalcoProcess.ProcessStatus === "Start") {
       const hindalcoData = await hindalcoTimeModel
         .find({ DeviceName: "XY001" })
         .sort({ _id: -1 })
-        .limit(300)
-        .select({ __v: 0, updatedAt: 0, DeviceName: 0, DeviceBattery: 0, DeviceSignal: 0, DeviceTemperature: 0 });
-
-        // console.log('hindalco data', hindalcoData[0].Time);
-        // const startTime = hindalcoProcess.Time;
-        // const lastDataTime = hindalcoData[0].Time;
-
-        // const lastDataTimeObj = new Date(lastDataTime.replace(',', 'T'));
-        // const processTimeObj = new Date(hindalcoProcess.Time.replace(",", "T"));
-
-        // console.log("lastDataTimeObj", lastDataTimeObj);
-        // console.log("processTimeObj", processTimeObj);
-
-        // const elapsedTime = lastDataTimeObj - processTimeObj;
-
-        // const elapsedTimeInSeconds = elapsedTime / 1000;
-
-        // console.log('elapsed time in seconds', elapsedTimeInSeconds);
-
-        // console.log("difference in time", lastDataTime - hindalcoProcess.Time);
-
-        const processTimeISO = hindalcoProcess.Time.replace(',', 'T');
-
-        const processTime = new Date(processTimeISO);
-
-        const processTimePlus51seconds = new Date(processTime.getTime() + 51 * 1000);
-
-        const localeTimePlus51seconds = processTimePlus51seconds.toLocaleString('en-US', {timeZone: 'Asia/Kolkata', hour12: false});
-
-        // console.log("process start time", hindalcoProcess.Time);
-
-        // console.log('51 seconds added time', localeTimePlus51seconds);
-
-        const dateTime = new Date();
-        const kolkataTime = dateTime.toLocaleString("en-US", {
-          timeZone: "Asia/Kolkata",
-          hour12: false,
+        .limit(100)
+        .select({
+          __v: 0,
+          updatedAt: 0,
+          DeviceName: 0,
+          DeviceBattery: 0,
+          DeviceSignal: 0,
+          DeviceTemperature: 0,
         });
 
-        const [datePart, timePart] = kolkataTime.split(",");
-        const trimmedTimePart = timePart.trim();
-        const [month, date, year] = datePart.split("/");
-        const [hour, minute, second] = trimmedTimePart.split(":");
+        // console.log('hindalco data', hindalcoData)
 
-        const currentTimestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+      const hindalcoProcessTwo = await hindalcoProcessModelTwo
+        .find({ DeviceName: "XY001" })
+        .sort({ _id: -1 })
+        .limit(1);
 
-        const [datePart2, timePart2] = localeTimePlus51seconds.split(",");
-        const trimmedTimePart2 = timePart2.trim();
-        const [month2, date2, year2] = datePart2.split("/");
-        const [hour2, minute2, second2] = trimmedTimePart2.split(":");
+      // console.log('hindalco process two', hindalcoProcessTwo);
 
-        const localeProcessTimePlus51seconds = `${year2}-${month2}-${date2},${hour2}:${minute2}:${second2}`;
+      // const stopTime =
+      //   hindalcoProcessTwo.ActualStopTime !== ""
+      //     ? hindalcoProcessTwo.ActualStopTime
+      //     : hindalcoProcessTwo.AutoStopTime;
 
-        console.log("currentTimestamp", currentTimestamp);
-        console.log("localeProcessTimePlus51seconds", localeProcessTimePlus51seconds);
+      const dateTime = new Date(); // to get current date and time in JS date object
+      const kolkataTime = dateTime.toLocaleString("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour12: false,
+      }); // to get current date and time in local format
 
+      const [datePart, timePart] = kolkataTime.split(",");
+      const trimmedTimePart = timePart.trim();
+      const [month, date, year] = datePart.split("/");
+      const [hour, minute, second] = trimmedTimePart.split(":");
 
-        // console.log("startTime", hindalcoProcess.Time);
-        // console.log("lastDataTime", lastDataTime);
+      // to get current date and time in our custom format
+      const currentTimestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
 
-        if(hindalcoData && (localeProcessTimePlus51seconds >= currentTimestamp)) {
-          const filteredData = hindalcoData.filter((data) => {
-            const dbDate = data.Time;
-            return dbDate >= hindalcoProcess.Time;
-          })
+      const startTime = hindalcoProcessTwo[0].StartTime;
+      const stopTime = hindalcoProcessTwo[0].AutoStopTime;
 
-          // console.log('data after processtime', filteredData);
-          res.status(200).json({ success: true, data: filteredData });
-        }
+      // console.log('current time ', currentTimestamp);
+      // console.log("auto stop time", stopTime);
 
-        else {
-          res.status(200).json({success: true, data: emptyGraphData})
-        }
+      if (hindalcoData && stopTime >= currentTimestamp) {
+        console.log("filter logic loop triggered");
+        const filteredData = hindalcoData.filter((data) => {
+          const dbDate = data.Time;
+          return dbDate >= startTime && dbDate <= stopTime;
+        });
 
+        res.status(200).json({ success: true, data: filteredData, inTimeRange: true });
+      } else {
+        //out of time range condition
+        console.log("out of range loop triggered");
+        res.status(200).json({ success: true, inTimeRange: false });
+      }
+    } // stop condition
+    else if (hindalcoProcess.ProcessStatus === "Stop") {
+      res.status(200).json({ success: false, inTimeRange: false });
     }
-    else if (hindalcoProcess.ProcessStatus === 'Stop') {
-      res.status(200).json({ success: true, data: emptyGraphData });
-    }
-      
-    
   } catch (error) {
     res.status(500).send("Error fetching hindalco process");
-    console.log(error)
+    console.log(error);
   }
 };
 
-export const getHindalcoReport = async (req,res) => {
+export const getHindalcoReport = async (req, res) => {
   try {
     const {
       projectName,
@@ -323,9 +406,11 @@ export const getHindalcoReport = async (req,res) => {
 
     let query = { DeviceName: projectName };
     let sort = { _id: -1 };
-    const unselectedSensorsArray = unselectedSensors ? unselectedSensors.split(",") : [];
+    const unselectedSensorsArray = unselectedSensors
+      ? unselectedSensors.split(",")
+      : [];
 
-    let projection = { __v: 0, _id: 0, DeviceName: 0};
+    let projection = { __v: 0, _id: 0, DeviceName: 0 };
 
     if (unselectedSensorsArray.length > 0) {
       unselectedSensorsArray.forEach((sensor) => {
@@ -345,49 +430,55 @@ export const getHindalcoReport = async (req,res) => {
 
     const hindalcoReportData = await cursor.exec();
 
-    if(fromDate && toDate) {
+    if (fromDate && toDate) {
       const formattedFromDate = fromDate + ",00:00:00";
       const formattedToDate = toDate + ",23:59:59";
 
       const filteredData = hindalcoReportData.filter((data) => {
-        if(data.Time) {
+        if (data.Time) {
           const dbDate = data.Time;
           return dbDate >= formattedFromDate && dbDate < formattedToDate;
         }
-      })
+      });
 
       res.json({ success: true, data: filteredData });
-    } 
-    
-    else if(sensorWiseFromDate && sensorWiseToDate) {
+    } else if (sensorWiseFromDate && sensorWiseToDate) {
       const formattedsensorWiseFromDate = sensorWiseFromDate + ",00:00:00";
       const formattedsensorWiseToDate = sensorWiseToDate + ",23:59:59";
 
       const filteredData = hindalcoReportData.filter((data) => {
         if (data.Time) {
           const dbDate = data.Time;
-          return dbDate >= formattedsensorWiseFromDate && dbDate < formattedsensorWiseToDate;
+          return (
+            dbDate >= formattedsensorWiseFromDate &&
+            dbDate < formattedsensorWiseToDate
+          );
         }
       });
 
       res.json({ success: true, data: filteredData });
-    } 
-    
-    else {
-       res.json({ success: true, data: hindalcoReportData });
+    } else {
+      res.json({ success: true, data: hindalcoReportData });
     }
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
-export const getHindalcoAverageReport = async(req,res) => {
+export const getHindalcoAverageReport = async (req, res) => {
   try {
-    const { projectName, avgFromDate, avgToDate, averageOption, intervalFromDate, intervalToDate, intervalOption } = req.query;
+    const {
+      projectName,
+      avgFromDate,
+      avgToDate,
+      averageOption,
+      intervalFromDate,
+      intervalToDate,
+      intervalOption,
+    } = req.query;
 
     // average data option
     if (avgFromDate && avgToDate) {
-
       const formattedAvgFromDate = avgFromDate + ",00:00:00";
       const formattedAvgToDate = avgToDate + ",23:59:59";
 
@@ -589,22 +680,66 @@ export const getHindalcoAverageReport = async(req,res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1: data.avgS1 !== null ? parseFloat(data.avgS1).toFixed(1) : 'N/A',
-                avgS2: data.avgS2 !== null ? parseFloat(data.avgS2).toFixed(1) : 'N/A',
-                avgS3: data.avgS3 !== null ? parseFloat(data.avgS3).toFixed(1) : 'N/A',
-                avgS4: data.avgS4 !== null ? parseFloat(data.avgS4).toFixed(1) : 'N/A',
-                avgS5: data.avgS5 !== null ? parseFloat(data.avgS5).toFixed(1) : 'N/A',
-                avgS6: data.avgS6 !== null ? parseFloat(data.avgS6).toFixed(1) : 'N/A',
-                avgS7: data.avgS7 !== null ? parseFloat(data.avgS7).toFixed(1) : 'N/A',
-                avgS8: data.avgS8 !== null ? parseFloat(data.avgS8).toFixed(1) : 'N/A',
-                avgS9: data.avgS9 !== null ? parseFloat(data.avgS9).toFixed(1) : 'N/A',
-                avgS10: data.avgS10 !== null ? parseFloat(data.avgS10).toFixed(1) : 'N/A',
-                avgS11: data.avgS11 !== null ? parseFloat(data.avgS11).toFixed(1) : 'N/A',
-                avgS12: data.avgS12 !== null ? parseFloat(data.avgS12).toFixed(1) : 'N/A',
-                avgS13: data.avgS13 !== null ? parseFloat(data.avgS13).toFixed(1) : 'N/A',
-                avgS14: data.avgS14 !== null ? parseFloat(data.avgS14).toFixed(1) : 'N/A',
-                avgS15: data.avgS15 !== null ? parseFloat(data.avgS15).toFixed(1) : 'N/A',
-
+                avgS1:
+                  data.avgS1 !== null
+                    ? parseFloat(data.avgS1).toFixed(1)
+                    : "N/A",
+                avgS2:
+                  data.avgS2 !== null
+                    ? parseFloat(data.avgS2).toFixed(1)
+                    : "N/A",
+                avgS3:
+                  data.avgS3 !== null
+                    ? parseFloat(data.avgS3).toFixed(1)
+                    : "N/A",
+                avgS4:
+                  data.avgS4 !== null
+                    ? parseFloat(data.avgS4).toFixed(1)
+                    : "N/A",
+                avgS5:
+                  data.avgS5 !== null
+                    ? parseFloat(data.avgS5).toFixed(1)
+                    : "N/A",
+                avgS6:
+                  data.avgS6 !== null
+                    ? parseFloat(data.avgS6).toFixed(1)
+                    : "N/A",
+                avgS7:
+                  data.avgS7 !== null
+                    ? parseFloat(data.avgS7).toFixed(1)
+                    : "N/A",
+                avgS8:
+                  data.avgS8 !== null
+                    ? parseFloat(data.avgS8).toFixed(1)
+                    : "N/A",
+                avgS9:
+                  data.avgS9 !== null
+                    ? parseFloat(data.avgS9).toFixed(1)
+                    : "N/A",
+                avgS10:
+                  data.avgS10 !== null
+                    ? parseFloat(data.avgS10).toFixed(1)
+                    : "N/A",
+                avgS11:
+                  data.avgS11 !== null
+                    ? parseFloat(data.avgS11).toFixed(1)
+                    : "N/A",
+                avgS12:
+                  data.avgS12 !== null
+                    ? parseFloat(data.avgS12).toFixed(1)
+                    : "N/A",
+                avgS13:
+                  data.avgS13 !== null
+                    ? parseFloat(data.avgS13).toFixed(1)
+                    : "N/A",
+                avgS14:
+                  data.avgS14 !== null
+                    ? parseFloat(data.avgS14).toFixed(1)
+                    : "N/A",
+                avgS15:
+                  data.avgS15 !== null
+                    ? parseFloat(data.avgS15).toFixed(1)
+                    : "N/A",
               };
             });
 
@@ -810,21 +945,66 @@ export const getHindalcoAverageReport = async(req,res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1: data.avgS1 !== null ? parseFloat(data.avgS1).toFixed(1) : 'N/A',
-                avgS2: data.avgS2 !== null ? parseFloat(data.avgS2).toFixed(1) : 'N/A',
-                avgS3: data.avgS3 !== null ? parseFloat(data.avgS3).toFixed(1) : 'N/A',
-                avgS4: data.avgS4 !== null ? parseFloat(data.avgS4).toFixed(1) : 'N/A',
-                avgS5: data.avgS5 !== null ? parseFloat(data.avgS5).toFixed(1) : 'N/A',
-                avgS6: data.avgS6 !== null ? parseFloat(data.avgS6).toFixed(1) : 'N/A',
-                avgS7: data.avgS7 !== null ? parseFloat(data.avgS7).toFixed(1) : 'N/A',
-                avgS8: data.avgS8 !== null ? parseFloat(data.avgS8).toFixed(1) : 'N/A',
-                avgS9: data.avgS9 !== null ? parseFloat(data.avgS9).toFixed(1) : 'N/A',
-                avgS10: data.avgS10 !== null ? parseFloat(data.avgS10).toFixed(1) : 'N/A',
-                avgS11: data.avgS11 !== null ? parseFloat(data.avgS11).toFixed(1) : 'N/A',
-                avgS12: data.avgS12 !== null ? parseFloat(data.avgS12).toFixed(1) : 'N/A',
-                avgS13: data.avgS13 !== null ? parseFloat(data.avgS13).toFixed(1) : 'N/A',
-                avgS14: data.avgS14 !== null ? parseFloat(data.avgS14).toFixed(1) : 'N/A',
-                avgS15: data.avgS15 !== null ? parseFloat(data.avgS15).toFixed(1) : 'N/A',
+                avgS1:
+                  data.avgS1 !== null
+                    ? parseFloat(data.avgS1).toFixed(1)
+                    : "N/A",
+                avgS2:
+                  data.avgS2 !== null
+                    ? parseFloat(data.avgS2).toFixed(1)
+                    : "N/A",
+                avgS3:
+                  data.avgS3 !== null
+                    ? parseFloat(data.avgS3).toFixed(1)
+                    : "N/A",
+                avgS4:
+                  data.avgS4 !== null
+                    ? parseFloat(data.avgS4).toFixed(1)
+                    : "N/A",
+                avgS5:
+                  data.avgS5 !== null
+                    ? parseFloat(data.avgS5).toFixed(1)
+                    : "N/A",
+                avgS6:
+                  data.avgS6 !== null
+                    ? parseFloat(data.avgS6).toFixed(1)
+                    : "N/A",
+                avgS7:
+                  data.avgS7 !== null
+                    ? parseFloat(data.avgS7).toFixed(1)
+                    : "N/A",
+                avgS8:
+                  data.avgS8 !== null
+                    ? parseFloat(data.avgS8).toFixed(1)
+                    : "N/A",
+                avgS9:
+                  data.avgS9 !== null
+                    ? parseFloat(data.avgS9).toFixed(1)
+                    : "N/A",
+                avgS10:
+                  data.avgS10 !== null
+                    ? parseFloat(data.avgS10).toFixed(1)
+                    : "N/A",
+                avgS11:
+                  data.avgS11 !== null
+                    ? parseFloat(data.avgS11).toFixed(1)
+                    : "N/A",
+                avgS12:
+                  data.avgS12 !== null
+                    ? parseFloat(data.avgS12).toFixed(1)
+                    : "N/A",
+                avgS13:
+                  data.avgS13 !== null
+                    ? parseFloat(data.avgS13).toFixed(1)
+                    : "N/A",
+                avgS14:
+                  data.avgS14 !== null
+                    ? parseFloat(data.avgS14).toFixed(1)
+                    : "N/A",
+                avgS15:
+                  data.avgS15 !== null
+                    ? parseFloat(data.avgS15).toFixed(1)
+                    : "N/A",
               };
             });
 
@@ -832,9 +1012,7 @@ export const getHindalcoAverageReport = async(req,res) => {
         } else {
           res.json({ success: false, message: "Data not found" });
         }
-      } 
-      
-      else if (averageOption === "day") {
+      } else if (averageOption === "day") {
         const hindalcoAverageData = await hindalcoTimeModel.aggregate([
           {
             $match: {
@@ -1032,21 +1210,66 @@ export const getHindalcoAverageReport = async(req,res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1: data.avgS1 !== null ? parseFloat(data.avgS1).toFixed(1) : 'N/A',
-                avgS2: data.avgS2 !== null ? parseFloat(data.avgS2).toFixed(1) : 'N/A',
-                avgS3: data.avgS3 !== null ? parseFloat(data.avgS3).toFixed(1) : 'N/A',
-                avgS4: data.avgS4 !== null ? parseFloat(data.avgS4).toFixed(1) : 'N/A',
-                avgS5: data.avgS5 !== null ? parseFloat(data.avgS5).toFixed(1) : 'N/A',
-                avgS6: data.avgS6 !== null ? parseFloat(data.avgS6).toFixed(1) : 'N/A',
-                avgS7: data.avgS7 !== null ? parseFloat(data.avgS7).toFixed(1) : 'N/A',
-                avgS8: data.avgS8 !== null ? parseFloat(data.avgS8).toFixed(1) : 'N/A',
-                avgS9: data.avgS9 !== null ? parseFloat(data.avgS9).toFixed(1) : 'N/A',
-                avgS10: data.avgS10 !== null ? parseFloat(data.avgS10).toFixed(1) : 'N/A',
-                avgS11: data.avgS11 !== null ? parseFloat(data.avgS11).toFixed(1) : 'N/A',
-                avgS12: data.avgS12 !== null ? parseFloat(data.avgS12).toFixed(1) : 'N/A',
-                avgS13: data.avgS13 !== null ? parseFloat(data.avgS13).toFixed(1) : 'N/A',
-                avgS14: data.avgS14 !== null ? parseFloat(data.avgS14).toFixed(1) : 'N/A',
-                avgS15: data.avgS15 !== null ? parseFloat(data.avgS15).toFixed(1) : 'N/A',
+                avgS1:
+                  data.avgS1 !== null
+                    ? parseFloat(data.avgS1).toFixed(1)
+                    : "N/A",
+                avgS2:
+                  data.avgS2 !== null
+                    ? parseFloat(data.avgS2).toFixed(1)
+                    : "N/A",
+                avgS3:
+                  data.avgS3 !== null
+                    ? parseFloat(data.avgS3).toFixed(1)
+                    : "N/A",
+                avgS4:
+                  data.avgS4 !== null
+                    ? parseFloat(data.avgS4).toFixed(1)
+                    : "N/A",
+                avgS5:
+                  data.avgS5 !== null
+                    ? parseFloat(data.avgS5).toFixed(1)
+                    : "N/A",
+                avgS6:
+                  data.avgS6 !== null
+                    ? parseFloat(data.avgS6).toFixed(1)
+                    : "N/A",
+                avgS7:
+                  data.avgS7 !== null
+                    ? parseFloat(data.avgS7).toFixed(1)
+                    : "N/A",
+                avgS8:
+                  data.avgS8 !== null
+                    ? parseFloat(data.avgS8).toFixed(1)
+                    : "N/A",
+                avgS9:
+                  data.avgS9 !== null
+                    ? parseFloat(data.avgS9).toFixed(1)
+                    : "N/A",
+                avgS10:
+                  data.avgS10 !== null
+                    ? parseFloat(data.avgS10).toFixed(1)
+                    : "N/A",
+                avgS11:
+                  data.avgS11 !== null
+                    ? parseFloat(data.avgS11).toFixed(1)
+                    : "N/A",
+                avgS12:
+                  data.avgS12 !== null
+                    ? parseFloat(data.avgS12).toFixed(1)
+                    : "N/A",
+                avgS13:
+                  data.avgS13 !== null
+                    ? parseFloat(data.avgS13).toFixed(1)
+                    : "N/A",
+                avgS14:
+                  data.avgS14 !== null
+                    ? parseFloat(data.avgS14).toFixed(1)
+                    : "N/A",
+                avgS15:
+                  data.avgS15 !== null
+                    ? parseFloat(data.avgS15).toFixed(1)
+                    : "N/A",
               };
             });
 
@@ -1055,11 +1278,10 @@ export const getHindalcoAverageReport = async(req,res) => {
           res.json({ success: false, message: "Data not found" });
         }
       }
-    } 
+    }
 
     // interval data option
-    else if(intervalFromDate && intervalToDate) {
-
+    else if (intervalFromDate && intervalToDate) {
       const formattedIntervalFromDate = intervalFromDate + ",00:00:00";
       const formattedIntervalToDate = intervalToDate + ",23:59:59";
 
@@ -1453,9 +1675,7 @@ export const getHindalcoAverageReport = async(req,res) => {
         } else {
           res.json({ success: false, message: "Data not found" });
         }
-      } 
-      
-      else if (intervalOption === "day") {
+      } else if (intervalOption === "day") {
         const hindalcoDailyData = await hindalcoTimeModel.aggregate([
           {
             $match: {
@@ -1617,7 +1837,7 @@ export const getHindalcoAverageReport = async(req,res) => {
                 dbDate >= formattedIntervalFromDate &&
                 dbDate < formattedIntervalToDate
               );
-            }) 
+            })
             .sort((a, b) => {
               const [dateA, timeA] = a.Time.split(",");
               const [dateB, timeB] = b.Time.split(",");
@@ -1650,7 +1870,7 @@ export const getHindalcoAverageReport = async(req,res) => {
           res.json({ success: false, message: "Data not found" });
         }
       }
-    }    
+    }
   } catch (error) {
     res.status(500).json({ error });
   }

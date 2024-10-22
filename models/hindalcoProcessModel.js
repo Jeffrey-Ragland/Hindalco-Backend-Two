@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 
 const processSchema = new mongoose.Schema({
-    ProcessStatus: String,
-    Time: String
+  DeviceName: String,
+  ProcessStatus: String,
+  ButtonClickedTime: String
 });
 
 const hindalcoProcessModel = mongoose.model('HindalcoProcess', processSchema);

@@ -99,7 +99,7 @@ def generate_random_data():
         "s14": random.randint(20, 100),
         "s15": random.randint(20, 100),
         "deviceTemperature": random.randint(20, 80),
-        "deviceSignal": random.randint(20, 100),
+        "deviceSignal": random.randint(0, 30),
         "deviceBattery": random.randint(20, 100),
     }
     return data

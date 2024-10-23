@@ -385,7 +385,7 @@ export const getHindalcoProcess = async (req, res) => {
       // console.log("auto stop time", stopTime);
 
       if (hindalcoData && stopTime >= currentTimestamp) {
-        console.log("filter logic loop triggered");
+        // console.log("filter logic loop triggered");
         const filteredData = hindalcoData.filter((data) => {
           const dbDate = data.Time;
           return dbDate >= startTime && dbDate <= stopTime;
@@ -394,7 +394,7 @@ export const getHindalcoProcess = async (req, res) => {
         res.status(200).json({ success: true, data: filteredData, inTimeRange: true, dateRange: dateRangeArray });
       } else {
         //out of time range condition
-        console.log("out of range loop triggered");
+        // console.log("out of range loop triggered");
         res.status(200).json({ success: true, inTimeRange: false, dateRange: dateRangeArray });
       }
     } // stop condition
@@ -409,6 +409,7 @@ export const getHindalcoProcess = async (req, res) => {
 
 export const getHindalcoReport = async (req, res) => {
   try {
+    console.log('reports api triggered');
     const {
       projectName,
       fromDate,
@@ -418,6 +419,8 @@ export const getHindalcoReport = async (req, res) => {
       sensorWiseFromDate,
       sensorWiseToDate,
       sensorWiseCount,
+      startDate, //threshold graph -> dashboard page
+      stopDate, //threshold graph -> dashboard page
     } = req.query;
 
     let query = { DeviceName: projectName };
@@ -457,7 +460,17 @@ export const getHindalcoReport = async (req, res) => {
         }
       });
 
-      res.json({ success: true, data: filteredData });
+      res.status(200).json({ success: true, data: filteredData });
+    } else if(startDate && stopDate) { //for threshold graph in dashboard page
+
+      const filteredData = hindalcoReportData.filter((data) => {
+
+        if(data.Time) {
+          const dbDate = data.Time;
+          return dbDate >= startDate && dbDate <= stopDate
+        }
+      });
+      res.status(200).json({ success: true, data: filteredData });
     } else if (sensorWiseFromDate && sensorWiseToDate) {
       const formattedsensorWiseFromDate = sensorWiseFromDate + ",00:00:00";
       const formattedsensorWiseToDate = sensorWiseToDate + ",23:59:59";
@@ -472,9 +485,9 @@ export const getHindalcoReport = async (req, res) => {
         }
       });
 
-      res.json({ success: true, data: filteredData });
+      res.status(200).json({ success: true, data: filteredData });
     } else {
-      res.json({ success: true, data: hindalcoReportData });
+      res.status(200).json({ success: true, data: hindalcoReportData });
     }
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });

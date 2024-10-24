@@ -320,21 +320,26 @@ export const getHindalcoProcess = async (req, res) => {
 
     let dateRangeArray = [];
 
-    hindalcoDateRange.forEach((entry) => {
-      const stopTime = entry.ActualStopTime !== "" ? entry.ActualStopTime : entry.AutoStopTime;
+    if(hindalcoDateRange) {
+      hindalcoDateRange.forEach((entry) => {
+        const stopTime =
+          entry.ActualStopTime !== ""
+            ? entry.ActualStopTime
+            : entry.AutoStopTime;
 
-      dateRangeArray.push({
-        startTime: entry.StartTime,
-        stopTime: stopTime
+        dateRangeArray.push({
+          startTime: entry.StartTime,
+          stopTime: stopTime,
+        });
       });
-    });
+    }
 
     const hindalcoProcess = await hindalcoProcessModel.findOne({});
     if (!hindalcoProcess) {
       return res.status(404).send("Process status not found");
     }
 
-    console.log("Process Status", hindalcoProcess.ProcessStatus);
+    // console.log("Process Status", hindalcoProcess.ProcessStatus);
 
     if (hindalcoProcess.ProcessStatus === "Start") {
       const hindalcoData = await hindalcoTimeModel
@@ -378,8 +383,13 @@ export const getHindalcoProcess = async (req, res) => {
       // to get current date and time in our custom format
       const currentTimestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
 
-      const startTime = hindalcoProcessTwo[0].StartTime;
-      const stopTime = hindalcoProcessTwo[0].AutoStopTime;
+      let startTime;
+      let stopTime;
+      
+      if(hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
+        startTime = hindalcoProcessTwo[0].StartTime;
+        stopTime = hindalcoProcessTwo[0].AutoStopTime;
+      }
 
       // console.log('current time ', currentTimestamp);
       // console.log("auto stop time", stopTime);
@@ -496,6 +506,7 @@ export const getHindalcoReport = async (req, res) => {
 
 export const getHindalcoAverageReport = async (req, res) => {
   try {
+    console.log('entered');
     const {
       projectName,
       avgFromDate,
@@ -505,6 +516,14 @@ export const getHindalcoAverageReport = async (req, res) => {
       intervalToDate,
       intervalOption,
     } = req.query;
+
+    console.log('projectName', projectName);
+    console.log('avgFromDate', avgFromDate);
+    console.log("avgToDate", avgToDate);
+    console.log("averageOption", averageOption);
+    console.log("intervalFromDate", intervalFromDate);
+    console.log("intervalToDate", intervalToDate);
+    console.log("intervalOption", intervalOption);
 
     // average data option
     if (avgFromDate && avgToDate) {

@@ -220,7 +220,7 @@ export const updateHindalcoProcess = async (req, res) => {
     });
 
     const calculatedStopTimeObj = new Date(
-      currentDateTime.getTime() + 51 * 1000
+      currentDateTime.getTime() + 61 * 60 * 1000
     ); //calculate stop time
 
     const calculatedStopTimeLocal = calculatedStopTimeObj.toLocaleString(
@@ -345,7 +345,7 @@ export const getHindalcoProcess = async (req, res) => {
       const hindalcoData = await hindalcoTimeModel
         .find({ DeviceName: "XY001" })
         .sort({ _id: -1 })
-        .limit(100)
+        .limit(500)
         .select({
           __v: 0,
           updatedAt: 0,
@@ -543,105 +543,105 @@ export const getHindalcoAverageReport = async (req, res) => {
                 $cond: {
                   if: { $eq: ["$S1", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S1" },
+                  else: { $toDouble: "$S1" },
                 },
               },
               S2: {
                 $cond: {
                   if: { $eq: ["$S2", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S2" },
+                  else: { $toDouble: "$S2" },
                 },
               },
               S3: {
                 $cond: {
                   if: { $eq: ["$S3", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S3" },
+                  else: { $toDouble: "$S3" },
                 },
               },
               S4: {
                 $cond: {
                   if: { $eq: ["$S4", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S4" },
+                  else: { $toDouble: "$S4" },
                 },
               },
               S5: {
                 $cond: {
                   if: { $eq: ["$S5", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S5" },
+                  else: { $toDouble: "$S5" },
                 },
               },
               S6: {
                 $cond: {
                   if: { $eq: ["$S6", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S6" },
+                  else: { $toDouble: "$S6" },
                 },
               },
               S7: {
                 $cond: {
                   if: { $eq: ["$S7", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S7" },
+                  else: { $toDouble: "$S7" },
                 },
               },
               S8: {
                 $cond: {
                   if: { $eq: ["$S8", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S8" },
+                  else: { $toDouble: "$S8" },
                 },
               },
               S9: {
                 $cond: {
                   if: { $eq: ["$S9", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S9" },
+                  else: { $toDouble: "$S9" },
                 },
               },
               S10: {
                 $cond: {
                   if: { $eq: ["$S10", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S10" },
+                  else: { $toDouble: "$S10" },
                 },
               },
               S11: {
                 $cond: {
                   if: { $eq: ["$S11", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S11" },
+                  else: { $toDouble: "$S11" },
                 },
               },
               S12: {
                 $cond: {
                   if: { $eq: ["$S12", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S12" },
+                  else: { $toDouble: "$S12" },
                 },
               },
               S13: {
                 $cond: {
                   if: { $eq: ["$S13", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S13" },
+                  else: { $toDouble: "$S13" },
                 },
               },
               S14: {
                 $cond: {
                   if: { $eq: ["$S14", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S14" },
+                  else: { $toDouble: "$S14" },
                 },
               },
               S15: {
                 $cond: {
                   if: { $eq: ["$S15", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S15" },
+                  else: { $toDouble: "$S15" },
                 },
               },
               hour: {
@@ -808,105 +808,105 @@ export const getHindalcoAverageReport = async (req, res) => {
                 $cond: {
                   if: { $eq: ["$S1", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S1" },
+                  else: { $toDouble: "$S1" },
                 },
               },
               S2: {
                 $cond: {
                   if: { $eq: ["$S2", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S2" },
+                  else: { $toDouble: "$S2" },
                 },
               },
               S3: {
                 $cond: {
                   if: { $eq: ["$S3", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S3" },
+                  else: { $toDouble: "$S3" },
                 },
               },
               S4: {
                 $cond: {
                   if: { $eq: ["$S4", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S4" },
+                  else: { $toDouble: "$S4" },
                 },
               },
               S5: {
                 $cond: {
                   if: { $eq: ["$S5", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S5" },
+                  else: { $toDouble: "$S5" },
                 },
               },
               S6: {
                 $cond: {
                   if: { $eq: ["$S6", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S6" },
+                  else: { $toDouble: "$S6" },
                 },
               },
               S7: {
                 $cond: {
                   if: { $eq: ["$S7", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S7" },
+                  else: { $toDouble: "$S7" },
                 },
               },
               S8: {
                 $cond: {
                   if: { $eq: ["$S8", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S8" },
+                  else: { $toDouble: "$S8" },
                 },
               },
               S9: {
                 $cond: {
                   if: { $eq: ["$S9", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S9" },
+                  else: { $toDouble: "$S9" },
                 },
               },
               S10: {
                 $cond: {
                   if: { $eq: ["$S10", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S10" },
+                  else: { $toDouble: "$S10" },
                 },
               },
               S11: {
                 $cond: {
                   if: { $eq: ["$S11", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S11" },
+                  else: { $toDouble: "$S11" },
                 },
               },
               S12: {
                 $cond: {
                   if: { $eq: ["$S12", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S12" },
+                  else: { $toDouble: "$S12" },
                 },
               },
               S13: {
                 $cond: {
                   if: { $eq: ["$S13", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S13" },
+                  else: { $toDouble: "$S13" },
                 },
               },
               S14: {
                 $cond: {
                   if: { $eq: ["$S14", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S14" },
+                  else: { $toDouble: "$S14" },
                 },
               },
               S15: {
                 $cond: {
                   if: { $eq: ["$S15", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S15" },
+                  else: { $toDouble: "$S15" },
                 },
               },
               minute: {
@@ -1073,105 +1073,105 @@ export const getHindalcoAverageReport = async (req, res) => {
                 $cond: {
                   if: { $eq: ["$S1", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S1" },
+                  else: { $toDouble: "$S1" },
                 },
               },
               S2: {
                 $cond: {
                   if: { $eq: ["$S2", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S2" },
+                  else: { $toDouble: "$S2" },
                 },
               },
               S3: {
                 $cond: {
                   if: { $eq: ["$S3", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S3" },
+                  else: { $toDouble: "$S3" },
                 },
               },
               S4: {
                 $cond: {
                   if: { $eq: ["$S4", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S4" },
+                  else: { $toDouble: "$S4" },
                 },
               },
               S5: {
                 $cond: {
                   if: { $eq: ["$S5", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S5" },
+                  else: { $toDouble: "$S5" },
                 },
               },
               S6: {
                 $cond: {
                   if: { $eq: ["$S6", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S6" },
+                  else: { $toDouble: "$S6" },
                 },
               },
               S7: {
                 $cond: {
                   if: { $eq: ["$S7", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S7" },
+                  else: { $toDouble: "$S7" },
                 },
               },
               S8: {
                 $cond: {
                   if: { $eq: ["$S8", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S8" },
+                  else: { $toDouble: "$S8" },
                 },
               },
               S9: {
                 $cond: {
                   if: { $eq: ["$S9", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S9" },
+                  else: { $toDouble: "$S9" },
                 },
               },
               S10: {
                 $cond: {
                   if: { $eq: ["$S10", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S10" },
+                  else: { $toDouble: "$S10" },
                 },
               },
               S11: {
                 $cond: {
                   if: { $eq: ["$S11", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S11" },
+                  else: { $toDouble: "$S11" },
                 },
               },
               S12: {
                 $cond: {
                   if: { $eq: ["$S12", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S12" },
+                  else: { $toDouble: "$S12" },
                 },
               },
               S13: {
                 $cond: {
                   if: { $eq: ["$S13", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S13" },
+                  else: { $toDouble: "$S13" },
                 },
               },
               S14: {
                 $cond: {
                   if: { $eq: ["$S14", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S14" },
+                  else: { $toDouble: "$S14" },
                 },
               },
               S15: {
                 $cond: {
                   if: { $eq: ["$S15", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S15" },
+                  else: { $toDouble: "$S15" },
                 },
               },
               day: {
@@ -1346,105 +1346,105 @@ export const getHindalcoAverageReport = async (req, res) => {
                 $cond: {
                   if: { $eq: ["$S1", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S1" },
+                  else: { $toDouble: "$S1" },
                 },
               },
               S2: {
                 $cond: {
                   if: { $eq: ["$S2", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S2" },
+                  else: { $toDouble: "$S2" },
                 },
               },
               S3: {
                 $cond: {
                   if: { $eq: ["$S3", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S3" },
+                  else: { $toDouble: "$S3" },
                 },
               },
               S4: {
                 $cond: {
                   if: { $eq: ["$S4", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S4" },
+                  else: { $toDouble: "$S4" },
                 },
               },
               S5: {
                 $cond: {
                   if: { $eq: ["$S5", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S5" },
+                  else: { $toDouble: "$S5" },
                 },
               },
               S6: {
                 $cond: {
                   if: { $eq: ["$S6", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S6" },
+                  else: { $toDouble: "$S6" },
                 },
               },
               S7: {
                 $cond: {
                   if: { $eq: ["$S7", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S7" },
+                  else: { $toDouble: "$S7" },
                 },
               },
               S8: {
                 $cond: {
                   if: { $eq: ["$S8", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S8" },
+                  else: { $toDouble: "$S8" },
                 },
               },
               S9: {
                 $cond: {
                   if: { $eq: ["$S9", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S9" },
+                  else: { $toDouble: "$S9" },
                 },
               },
               S10: {
                 $cond: {
                   if: { $eq: ["$S10", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S10" },
+                  else: { $toDouble: "$S10" },
                 },
               },
               S11: {
                 $cond: {
                   if: { $eq: ["$S11", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S11" },
+                  else: { $toDouble: "$S11" },
                 },
               },
               S12: {
                 $cond: {
                   if: { $eq: ["$S12", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S12" },
+                  else: { $toDouble: "$S12" },
                 },
               },
               S13: {
                 $cond: {
                   if: { $eq: ["$S13", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S13" },
+                  else: { $toDouble: "$S13" },
                 },
               },
               S14: {
                 $cond: {
                   if: { $eq: ["$S14", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S14" },
+                  else: { $toDouble: "$S14" },
                 },
               },
               S15: {
                 $cond: {
                   if: { $eq: ["$S15", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S15" },
+                  else: { $toDouble: "$S15" },
                 },
               },
               originalTime: "$Time",
@@ -1542,105 +1542,105 @@ export const getHindalcoAverageReport = async (req, res) => {
                 $cond: {
                   if: { $eq: ["$S1", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S1" },
+                  else: { $toDouble: "$S1" },
                 },
               },
               S2: {
                 $cond: {
                   if: { $eq: ["$S2", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S2" },
+                  else: { $toDouble: "$S2" },
                 },
               },
               S3: {
                 $cond: {
                   if: { $eq: ["$S3", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S3" },
+                  else: { $toDouble: "$S3" },
                 },
               },
               S4: {
                 $cond: {
                   if: { $eq: ["$S4", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S4" },
+                  else: { $toDouble: "$S4" },
                 },
               },
               S5: {
                 $cond: {
                   if: { $eq: ["$S5", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S5" },
+                  else: { $toDouble: "$S5" },
                 },
               },
               S6: {
                 $cond: {
                   if: { $eq: ["$S6", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S6" },
+                  else: { $toDouble: "$S6" },
                 },
               },
               S7: {
                 $cond: {
                   if: { $eq: ["$S7", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S7" },
+                  else: { $toDouble: "$S7" },
                 },
               },
               S8: {
                 $cond: {
                   if: { $eq: ["$S8", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S8" },
+                  else: { $toDouble: "$S8" },
                 },
               },
               S9: {
                 $cond: {
                   if: { $eq: ["$S9", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S9" },
+                  else: { $toDouble: "$S9" },
                 },
               },
               S10: {
                 $cond: {
                   if: { $eq: ["$S10", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S10" },
+                  else: { $toDouble: "$S10" },
                 },
               },
               S11: {
                 $cond: {
                   if: { $eq: ["$S11", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S11" },
+                  else: { $toDouble: "$S11" },
                 },
               },
               S12: {
                 $cond: {
                   if: { $eq: ["$S12", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S12" },
+                  else: { $toDouble: "$S12" },
                 },
               },
               S13: {
                 $cond: {
                   if: { $eq: ["$S13", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S13" },
+                  else: { $toDouble: "$S13" },
                 },
               },
               S14: {
                 $cond: {
                   if: { $eq: ["$S14", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S14" },
+                  else: { $toDouble: "$S14" },
                 },
               },
               S15: {
                 $cond: {
                   if: { $eq: ["$S15", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S15" },
+                  else: { $toDouble: "$S15" },
                 },
               },
               originalTime: "$Time",
@@ -1736,105 +1736,105 @@ export const getHindalcoAverageReport = async (req, res) => {
                 $cond: {
                   if: { $eq: ["$S1", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S1" },
+                  else: { $toDouble: "$S1" },
                 },
               },
               S2: {
                 $cond: {
                   if: { $eq: ["$S2", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S2" },
+                  else: { $toDouble: "$S2" },
                 },
               },
               S3: {
                 $cond: {
                   if: { $eq: ["$S3", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S3" },
+                  else: { $toDouble: "$S3" },
                 },
               },
               S4: {
                 $cond: {
                   if: { $eq: ["$S4", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S4" },
+                  else: { $toDouble: "$S4" },
                 },
               },
               S5: {
                 $cond: {
                   if: { $eq: ["$S5", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S5" },
+                  else: { $toDouble: "$S5" },
                 },
               },
               S6: {
                 $cond: {
                   if: { $eq: ["$S6", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S6" },
+                  else: { $toDouble: "$S6" },
                 },
               },
               S7: {
                 $cond: {
                   if: { $eq: ["$S7", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S7" },
+                  else: { $toDouble: "$S7" },
                 },
               },
               S8: {
                 $cond: {
                   if: { $eq: ["$S8", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S8" },
+                  else: { $toDouble: "$S8" },
                 },
               },
               S9: {
                 $cond: {
                   if: { $eq: ["$S9", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S9" },
+                  else: { $toDouble: "$S9" },
                 },
               },
               S10: {
                 $cond: {
                   if: { $eq: ["$S10", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S10" },
+                  else: { $toDouble: "$S10" },
                 },
               },
               S11: {
                 $cond: {
                   if: { $eq: ["$S11", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S11" },
+                  else: { $toDouble: "$S11" },
                 },
               },
               S12: {
                 $cond: {
                   if: { $eq: ["$S12", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S12" },
+                  else: { $toDouble: "$S12" },
                 },
               },
               S13: {
                 $cond: {
                   if: { $eq: ["$S13", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S13" },
+                  else: { $toDouble: "$S13" },
                 },
               },
               S14: {
                 $cond: {
                   if: { $eq: ["$S14", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S14" },
+                  else: { $toDouble: "$S14" },
                 },
               },
               S15: {
                 $cond: {
                   if: { $eq: ["$S15", "N/A"] },
                   then: null,
-                  else: { $toInt: "$S15" },
+                  else: { $toDouble: "$S15" },
                 },
               },
               originalTime: "$Time",

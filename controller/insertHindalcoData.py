@@ -71,6 +71,56 @@
 #     send_data()
 
 
+# import requests
+# import random
+# import time
+
+# # Set the base URL for your API
+# BASE_URL = "http://localhost:4000/backend/insertHindalcoData"
+
+# def generate_random_data():
+#     """Generate random sensor data."""
+#     device_name = "XY001"
+#     data = {
+#         "deviceName": device_name,
+#         "s1": random.randint(20, 100),
+#         "s2": random.randint(20, 100),
+#         "s3": random.randint(20, 100),
+#         "s4": random.randint(20, 100),
+#         "s5": random.randint(20, 100),
+#         "s6": random.randint(20, 100),
+#         "s7": random.randint(20, 100),
+#         "s8": random.randint(20, 100),
+#         "s9": random.randint(20, 100),
+#         "s10": random.randint(20, 100),
+#         "s11": random.randint(20, 100),
+#         "s12": random.randint(20, 100),
+#         "s13": random.randint(20, 100),
+#         "s14": random.randint(20, 100),
+#         "s15": random.randint(20, 100),
+#         "deviceTemperature": random.randint(20, 80),
+#         "deviceSignal": random.randint(0, 30),
+#         "deviceBattery": random.randint(20, 100),
+#     }
+#     return data
+
+# def push_data():
+#     """Send random data to the API."""
+#     while True:
+#         random_data = generate_random_data()
+#         response = requests.get(BASE_URL, params=random_data)
+        
+#         if response.status_code == 200:
+#             print(f"Data sent successfully: {random_data}")
+#         else:
+#             print(f"Failed to send data: {response.status_code} - {response.text}")
+        
+#         time.sleep(1)
+
+# if __name__ == "__main__":
+#     push_data()
+
+
 import requests
 import random
 import time
@@ -78,44 +128,55 @@ import time
 # Set the base URL for your API
 BASE_URL = "http://localhost:4000/backend/insertHindalcoData"
 
-def generate_random_data():
-    """Generate random sensor data."""
+def generate_random_increasing_data(previous_values, max_value=900, total_steps=51, current_step=1):
+    """Generate random sensor data with minimal deviation, gradually increasing to a maximum over specified steps."""
     device_name = "XY001"
+    
+    # Initialize the data dictionary
     data = {
         "deviceName": device_name,
-        "s1": random.randint(20, 100),
-        "s2": random.randint(20, 100),
-        "s3": random.randint(20, 100),
-        "s4": random.randint(20, 100),
-        "s5": random.randint(20, 100),
-        "s6": random.randint(20, 100),
-        "s7": random.randint(20, 100),
-        "s8": random.randint(20, 100),
-        "s9": random.randint(20, 100),
-        "s10": random.randint(20, 100),
-        "s11": random.randint(20, 100),
-        "s12": random.randint(20, 100),
-        "s13": random.randint(20, 100),
-        "s14": random.randint(20, 100),
-        "s15": random.randint(20, 100),
-        "deviceTemperature": random.randint(20, 80),
-        "deviceSignal": random.randint(0, 30),
-        "deviceBattery": random.randint(20, 100),
     }
+    
+    # Calculate a dynamic step size to reach max_value over total_steps
+    for i in range(1, 16):  # s1 to s15
+        previous_value = previous_values.get(f"s{i}", 0)
+        
+        # Step size increases as we approach the max_value
+        max_possible_increase = (max_value - previous_value) // (total_steps - current_step + 1)
+        step_size = random.randint(0, max(1, max_possible_increase))  # Minimum step size is 1
+        
+        # Increment the sensor value, capped at max_value
+        new_value = min(max_value, previous_value + step_size)
+        
+        data[f"s{i}"] = new_value
+    
+    # Additional fields with fixed ranges
+    data["deviceTemperature"] = random.randint(20, 80)
+    data["deviceSignal"] = random.randint(0, 30)
+    data["deviceBattery"] = random.randint(20, 100)
+    
     return data
 
 def push_data():
-    """Send random data to the API."""
-    while True:
-        random_data = generate_random_data()
-        response = requests.get(BASE_URL, params=random_data)
+    """Send random increasing data to the API over 51 iterations."""
+    previous_values = {f"s{i}": 0 for i in range(1, 16)}  # Start with all sensor values at 0
+    
+    for step in range(1, 52):  # 51 data points
+        random_increasing_data = generate_random_increasing_data(previous_values, current_step=step)
+        
+        # Update previous values for the next iteration
+        previous_values = {key: value for key, value in random_increasing_data.items() if key.startswith('s')}
+        
+        # Send data to the API
+        response = requests.get(BASE_URL, params=random_increasing_data)
         
         if response.status_code == 200:
-            print(f"Data sent successfully: {random_data}")
+            print(f"Data sent successfully: {random_increasing_data}")
         else:
             print(f"Failed to send data: {response.status_code} - {response.text}")
         
-        time.sleep(1)
+        time.sleep(1)  # Wait 1 second before sending the next set of data
 
 if __name__ == "__main__":
     push_data()
+

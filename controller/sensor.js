@@ -506,7 +506,7 @@ export const getHindalcoReport = async (req, res) => {
 
 export const getHindalcoAverageReport = async (req, res) => {
   try {
-    console.log('entered');
+    // console.log('entered');
     const {
       projectName,
       avgFromDate,
@@ -517,13 +517,13 @@ export const getHindalcoAverageReport = async (req, res) => {
       intervalOption,
     } = req.query;
 
-    console.log('projectName', projectName);
-    console.log('avgFromDate', avgFromDate);
-    console.log("avgToDate", avgToDate);
-    console.log("averageOption", averageOption);
-    console.log("intervalFromDate", intervalFromDate);
-    console.log("intervalToDate", intervalToDate);
-    console.log("intervalOption", intervalOption);
+    // console.log('projectName', projectName);
+    // console.log('avgFromDate', avgFromDate);
+    // console.log("avgToDate", avgToDate);
+    // console.log("averageOption", averageOption);
+    // console.log("intervalFromDate", intervalFromDate);
+    // console.log("intervalToDate", intervalToDate);
+    // console.log("intervalOption", intervalOption);
 
     // average data option
     if (avgFromDate && avgToDate) {

@@ -221,7 +221,7 @@ def push_data():
     """Send random increasing data to the API over 366 iterations."""
     previous_values = {f"s{i}": 0 for i in range(1, 16)}  # Start with all sensor values at 0
     
-    for step in range(1, 367):  # 366 data points
+    for step in range(1, 733):  # 366 data points
         random_increasing_data = generate_random_increasing_data(previous_values, current_step=step)
         
         # Update previous values for the next iteration

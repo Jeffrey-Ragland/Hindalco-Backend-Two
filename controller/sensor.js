@@ -146,21 +146,21 @@ export const insertHindalcoData = async (req, res) => {
   try {
     const hindalcoData = {
       DeviceName: deviceName,
-      S1: s1,
-      S2: s2,
-      S3: s3,
-      S4: s4,
-      S5: s5,
-      S6: s6,
-      S7: s7,
-      S8: s8,
-      S9: s9,
-      S10: s10,
-      S11: s11,
-      S12: s12,
-      S13: s13,
-      S14: s14,
-      S15: s15,
+      T1: s1,
+      T2: s2,
+      T3: s3,
+      T4: s4,
+      T5: s5,
+      T6: s6,
+      T7: s7,
+      T8: s8,
+      T9: s9,
+      T10: s10,
+      T11: s11,
+      T12: s12,
+      T13: s13,
+      T14: s14,
+      T15: s15,
       DeviceTemperature: deviceTemperature,
       DeviceSignal: deviceSignal,
       DeviceBattery: deviceBattery,
@@ -189,9 +189,10 @@ export const insertHindalcoData = async (req, res) => {
 };
 
 export const getHindalcoData = async (req, res) => {
+ 
   try {
+    console.log('get api triggered')
     const limit = parseInt(req.query.limit);
-
     const hindalcoData = await hindalcoTimeModel
       // const hindalcoData = await hindalcoModel
       .find({ DeviceName: "XY001" }) //static device number
@@ -200,7 +201,7 @@ export const getHindalcoData = async (req, res) => {
       .select({ __v: 0, updatedAt: 0, DeviceName: 0 });
 
     if (hindalcoData.length > 0) {
-      res.json({ success: true, data: hindalcoData });
+      res.status(200).json({ success: true, data: hindalcoData });
     } else {
       res.json({ success: false, message: "Data not found" });
     }
@@ -220,7 +221,7 @@ export const updateHindalcoProcess = async (req, res) => {
     });
 
     const calculatedStopTimeObj = new Date(
-      currentDateTime.getTime() + 61 * 60 * 1000
+      currentDateTime.getTime() + 61 * 60 * 60 * 1000
     ); //calculate stop time
 
     const calculatedStopTimeLocal = calculatedStopTimeObj.toLocaleString(
@@ -539,109 +540,109 @@ export const getHindalcoAverageReport = async (req, res) => {
           },
           {
             $project: {
-              S1: {
+              T1: {
                 $cond: {
-                  if: { $eq: ["$S1", "N/A"] },
+                  if: { $eq: ["$T1", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S1" },
+                  else: { $toDouble: "$T1" },
                 },
               },
-              S2: {
+              T2: {
                 $cond: {
-                  if: { $eq: ["$S2", "N/A"] },
+                  if: { $eq: ["$T2", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S2" },
+                  else: { $toDouble: "$T2" },
                 },
               },
-              S3: {
+              T3: {
                 $cond: {
-                  if: { $eq: ["$S3", "N/A"] },
+                  if: { $eq: ["$T3", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S3" },
+                  else: { $toDouble: "$T3" },
                 },
               },
-              S4: {
+              T4: {
                 $cond: {
-                  if: { $eq: ["$S4", "N/A"] },
+                  if: { $eq: ["$T4", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S4" },
+                  else: { $toDouble: "$T4" },
                 },
               },
-              S5: {
+              T5: {
                 $cond: {
-                  if: { $eq: ["$S5", "N/A"] },
+                  if: { $eq: ["$T5", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S5" },
+                  else: { $toDouble: "$T5" },
                 },
               },
-              S6: {
+              T6: {
                 $cond: {
-                  if: { $eq: ["$S6", "N/A"] },
+                  if: { $eq: ["$T6", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S6" },
+                  else: { $toDouble: "$T6" },
                 },
               },
-              S7: {
+              T7: {
                 $cond: {
-                  if: { $eq: ["$S7", "N/A"] },
+                  if: { $eq: ["$T7", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S7" },
+                  else: { $toDouble: "$T7" },
                 },
               },
-              S8: {
+              T8: {
                 $cond: {
-                  if: { $eq: ["$S8", "N/A"] },
+                  if: { $eq: ["$T8", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S8" },
+                  else: { $toDouble: "$T8" },
                 },
               },
-              S9: {
+              T9: {
                 $cond: {
-                  if: { $eq: ["$S9", "N/A"] },
+                  if: { $eq: ["$T9", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S9" },
+                  else: { $toDouble: "$T9" },
                 },
               },
-              S10: {
+              T10: {
                 $cond: {
-                  if: { $eq: ["$S10", "N/A"] },
+                  if: { $eq: ["$T10", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S10" },
+                  else: { $toDouble: "$T10" },
                 },
               },
-              S11: {
+              T11: {
                 $cond: {
-                  if: { $eq: ["$S11", "N/A"] },
+                  if: { $eq: ["$T11", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S11" },
+                  else: { $toDouble: "$T11" },
                 },
               },
-              S12: {
+              T12: {
                 $cond: {
-                  if: { $eq: ["$S12", "N/A"] },
+                  if: { $eq: ["$T12", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S12" },
+                  else: { $toDouble: "$T12" },
                 },
               },
-              S13: {
+              T13: {
                 $cond: {
-                  if: { $eq: ["$S13", "N/A"] },
+                  if: { $eq: ["$T13", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S13" },
+                  else: { $toDouble: "$T13" },
                 },
               },
-              S14: {
+              T14: {
                 $cond: {
-                  if: { $eq: ["$S14", "N/A"] },
+                  if: { $eq: ["$T14", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S14" },
+                  else: { $toDouble: "$T14" },
                 },
               },
-              S15: {
+              T15: {
                 $cond: {
-                  if: { $eq: ["$S15", "N/A"] },
+                  if: { $eq: ["$T15", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S15" },
+                  else: { $toDouble: "$T15" },
                 },
               },
               hour: {
@@ -655,21 +656,21 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $group: {
               _id: "$hour",
-              avgS1: { $avg: "$S1" },
-              avgS2: { $avg: "$S2" },
-              avgS3: { $avg: "$S3" },
-              avgS4: { $avg: "$S4" },
-              avgS5: { $avg: "$S5" },
-              avgS6: { $avg: "$S6" },
-              avgS7: { $avg: "$S7" },
-              avgS8: { $avg: "$S8" },
-              avgS9: { $avg: "$S9" },
-              avgS10: { $avg: "$S10" },
-              avgS11: { $avg: "$S11" },
-              avgS12: { $avg: "$S12" },
-              avgS13: { $avg: "$S13" },
-              avgS14: { $avg: "$S14" },
-              avgS15: { $avg: "$S15" },
+              avgT1: { $avg: "$T1" },
+              avgT2: { $avg: "$T2" },
+              avgT3: { $avg: "$T3" },
+              avgT4: { $avg: "$T4" },
+              avgT5: { $avg: "$T5" },
+              avgT6: { $avg: "$T6" },
+              avgT7: { $avg: "$T7" },
+              avgT8: { $avg: "$T8" },
+              avgT9: { $avg: "$T9" },
+              avgT10: { $avg: "$T10" },
+              avgT11: { $avg: "$T11" },
+              avgT12: { $avg: "$T12" },
+              avgT13: { $avg: "$T13" },
+              avgT14: { $avg: "$T14" },
+              avgT15: { $avg: "$T15" },
             },
           },
           {
@@ -695,21 +696,21 @@ export const getHindalcoAverageReport = async (req, res) => {
                   },
                 ],
               },
-              avgS1: 1,
-              avgS2: 1,
-              avgS3: 1,
-              avgS4: 1,
-              avgS5: 1,
-              avgS6: 1,
-              avgS7: 1,
-              avgS8: 1,
-              avgS9: 1,
-              avgS10: 1,
-              avgS11: 1,
-              avgS12: 1,
-              avgS13: 1,
-              avgS14: 1,
-              avgS15: 1,
+              avgT1: 1,
+              avgT2: 1,
+              avgT3: 1,
+              avgT4: 1,
+              avgT5: 1,
+              avgT6: 1,
+              avgT7: 1,
+              avgT8: 1,
+              avgT9: 1,
+              avgT10: 1,
+              avgT11: 1,
+              avgT12: 1,
+              avgT13: 1,
+              avgT14: 1,
+              avgT15: 1,
             },
           },
           {
@@ -728,65 +729,65 @@ export const getHindalcoAverageReport = async (req, res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1:
-                  data.avgS1 !== null
-                    ? parseFloat(data.avgS1).toFixed(1)
+                avgT1:
+                  data.avgT1 !== null
+                    ? parseFloat(data.avgT1).toFixed(1)
                     : "N/A",
-                avgS2:
-                  data.avgS2 !== null
-                    ? parseFloat(data.avgS2).toFixed(1)
+                avgT2:
+                  data.avgT2 !== null
+                    ? parseFloat(data.avgT2).toFixed(1)
                     : "N/A",
-                avgS3:
-                  data.avgS3 !== null
-                    ? parseFloat(data.avgS3).toFixed(1)
+                avgT3:
+                  data.avgT3 !== null
+                    ? parseFloat(data.avgT3).toFixed(1)
                     : "N/A",
-                avgS4:
-                  data.avgS4 !== null
-                    ? parseFloat(data.avgS4).toFixed(1)
+                avgT4:
+                  data.avgT4 !== null
+                    ? parseFloat(data.avgT4).toFixed(1)
                     : "N/A",
-                avgS5:
-                  data.avgS5 !== null
-                    ? parseFloat(data.avgS5).toFixed(1)
+                avgT5:
+                  data.avgT5 !== null
+                    ? parseFloat(data.avgT5).toFixed(1)
                     : "N/A",
-                avgS6:
-                  data.avgS6 !== null
-                    ? parseFloat(data.avgS6).toFixed(1)
+                avgT6:
+                  data.avgT6 !== null
+                    ? parseFloat(data.avgT6).toFixed(1)
                     : "N/A",
-                avgS7:
-                  data.avgS7 !== null
-                    ? parseFloat(data.avgS7).toFixed(1)
+                avgT7:
+                  data.avgT7 !== null
+                    ? parseFloat(data.avgT7).toFixed(1)
                     : "N/A",
-                avgS8:
-                  data.avgS8 !== null
-                    ? parseFloat(data.avgS8).toFixed(1)
+                avgT8:
+                  data.avgT8 !== null
+                    ? parseFloat(data.avgT8).toFixed(1)
                     : "N/A",
-                avgS9:
-                  data.avgS9 !== null
-                    ? parseFloat(data.avgS9).toFixed(1)
+                avgT9:
+                  data.avgT9 !== null
+                    ? parseFloat(data.avgT9).toFixed(1)
                     : "N/A",
-                avgS10:
-                  data.avgS10 !== null
-                    ? parseFloat(data.avgS10).toFixed(1)
+                avgT10:
+                  data.avgT10 !== null
+                    ? parseFloat(data.avgT10).toFixed(1)
                     : "N/A",
-                avgS11:
-                  data.avgS11 !== null
-                    ? parseFloat(data.avgS11).toFixed(1)
+                avgT11:
+                  data.avgT11 !== null
+                    ? parseFloat(data.avgT11).toFixed(1)
                     : "N/A",
-                avgS12:
-                  data.avgS12 !== null
-                    ? parseFloat(data.avgS12).toFixed(1)
+                avgT12:
+                  data.avgT12 !== null
+                    ? parseFloat(data.avgT12).toFixed(1)
                     : "N/A",
-                avgS13:
-                  data.avgS13 !== null
-                    ? parseFloat(data.avgS13).toFixed(1)
+                avgT13:
+                  data.avgT13 !== null
+                    ? parseFloat(data.avgT13).toFixed(1)
                     : "N/A",
-                avgS14:
-                  data.avgS14 !== null
-                    ? parseFloat(data.avgS14).toFixed(1)
+                avgT14:
+                  data.avgT14 !== null
+                    ? parseFloat(data.avgT14).toFixed(1)
                     : "N/A",
-                avgS15:
-                  data.avgS15 !== null
-                    ? parseFloat(data.avgS15).toFixed(1)
+                avgT15:
+                  data.avgT15 !== null
+                    ? parseFloat(data.avgT15).toFixed(1)
                     : "N/A",
               };
             });
@@ -804,109 +805,109 @@ export const getHindalcoAverageReport = async (req, res) => {
           },
           {
             $project: {
-              S1: {
+              T1: {
                 $cond: {
-                  if: { $eq: ["$S1", "N/A"] },
+                  if: { $eq: ["$T1", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S1" },
+                  else: { $toDouble: "$T1" },
                 },
               },
-              S2: {
+              T2: {
                 $cond: {
-                  if: { $eq: ["$S2", "N/A"] },
+                  if: { $eq: ["$T2", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S2" },
+                  else: { $toDouble: "$T2" },
                 },
               },
-              S3: {
+              T3: {
                 $cond: {
-                  if: { $eq: ["$S3", "N/A"] },
+                  if: { $eq: ["$T3", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S3" },
+                  else: { $toDouble: "$T3" },
                 },
               },
-              S4: {
+              T4: {
                 $cond: {
-                  if: { $eq: ["$S4", "N/A"] },
+                  if: { $eq: ["$T4", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S4" },
+                  else: { $toDouble: "$T4" },
                 },
               },
-              S5: {
+              T5: {
                 $cond: {
-                  if: { $eq: ["$S5", "N/A"] },
+                  if: { $eq: ["$T5", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S5" },
+                  else: { $toDouble: "$T5" },
                 },
               },
-              S6: {
+              T6: {
                 $cond: {
-                  if: { $eq: ["$S6", "N/A"] },
+                  if: { $eq: ["$T6", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S6" },
+                  else: { $toDouble: "$T6" },
                 },
               },
-              S7: {
+              T7: {
                 $cond: {
-                  if: { $eq: ["$S7", "N/A"] },
+                  if: { $eq: ["$T7", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S7" },
+                  else: { $toDouble: "$T7" },
                 },
               },
-              S8: {
+              T8: {
                 $cond: {
-                  if: { $eq: ["$S8", "N/A"] },
+                  if: { $eq: ["$T8", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S8" },
+                  else: { $toDouble: "$T8" },
                 },
               },
-              S9: {
+              T9: {
                 $cond: {
-                  if: { $eq: ["$S9", "N/A"] },
+                  if: { $eq: ["$T9", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S9" },
+                  else: { $toDouble: "$T9" },
                 },
               },
-              S10: {
+              T10: {
                 $cond: {
-                  if: { $eq: ["$S10", "N/A"] },
+                  if: { $eq: ["$T10", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S10" },
+                  else: { $toDouble: "$T10" },
                 },
               },
-              S11: {
+              T11: {
                 $cond: {
-                  if: { $eq: ["$S11", "N/A"] },
+                  if: { $eq: ["$T11", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S11" },
+                  else: { $toDouble: "$T11" },
                 },
               },
-              S12: {
+              T12: {
                 $cond: {
-                  if: { $eq: ["$S12", "N/A"] },
+                  if: { $eq: ["$T12", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S12" },
+                  else: { $toDouble: "$T12" },
                 },
               },
-              S13: {
+              T13: {
                 $cond: {
-                  if: { $eq: ["$S13", "N/A"] },
+                  if: { $eq: ["$T13", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S13" },
+                  else: { $toDouble: "$T13" },
                 },
               },
-              S14: {
+              T14: {
                 $cond: {
-                  if: { $eq: ["$S14", "N/A"] },
+                  if: { $eq: ["$T14", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S14" },
+                  else: { $toDouble: "$T14" },
                 },
               },
-              S15: {
+              T15: {
                 $cond: {
-                  if: { $eq: ["$S15", "N/A"] },
+                  if: { $eq: ["$T15", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S15" },
+                  else: { $toDouble: "$T15" },
                 },
               },
               minute: {
@@ -920,21 +921,21 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $group: {
               _id: "$minute",
-              avgS1: { $avg: "$S1" },
-              avgS2: { $avg: "$S2" },
-              avgS3: { $avg: "$S3" },
-              avgS4: { $avg: "$S4" },
-              avgS5: { $avg: "$S5" },
-              avgS6: { $avg: "$S6" },
-              avgS7: { $avg: "$S7" },
-              avgS8: { $avg: "$S8" },
-              avgS9: { $avg: "$S9" },
-              avgS10: { $avg: "$S10" },
-              avgS11: { $avg: "$S11" },
-              avgS12: { $avg: "$S12" },
-              avgS13: { $avg: "$S13" },
-              avgS14: { $avg: "$S14" },
-              avgS15: { $avg: "$S15" },
+              avgT1: { $avg: "$T1" },
+              avgT2: { $avg: "$T2" },
+              avgT3: { $avg: "$T3" },
+              avgT4: { $avg: "$T4" },
+              avgT5: { $avg: "$T5" },
+              avgT6: { $avg: "$T6" },
+              avgT7: { $avg: "$T7" },
+              avgT8: { $avg: "$T8" },
+              avgT9: { $avg: "$T9" },
+              avgT10: { $avg: "$T10" },
+              avgT11: { $avg: "$T11" },
+              avgT12: { $avg: "$T12" },
+              avgT13: { $avg: "$T13" },
+              avgT14: { $avg: "$T14" },
+              avgT15: { $avg: "$T15" },
             },
           },
           {
@@ -960,21 +961,21 @@ export const getHindalcoAverageReport = async (req, res) => {
                   },
                 ],
               },
-              avgS1: 1,
-              avgS2: 1,
-              avgS3: 1,
-              avgS4: 1,
-              avgS5: 1,
-              avgS6: 1,
-              avgS7: 1,
-              avgS8: 1,
-              avgS9: 1,
-              avgS10: 1,
-              avgS11: 1,
-              avgS12: 1,
-              avgS13: 1,
-              avgS14: 1,
-              avgS15: 1,
+              avgT1: 1,
+              avgT2: 1,
+              avgT3: 1,
+              avgT4: 1,
+              avgT5: 1,
+              avgT6: 1,
+              avgT7: 1,
+              avgT8: 1,
+              avgT9: 1,
+              avgT10: 1,
+              avgT11: 1,
+              avgT12: 1,
+              avgT13: 1,
+              avgT14: 1,
+              avgT15: 1,
             },
           },
           {
@@ -993,65 +994,65 @@ export const getHindalcoAverageReport = async (req, res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1:
-                  data.avgS1 !== null
-                    ? parseFloat(data.avgS1).toFixed(1)
+                avgT1:
+                  data.avgT1 !== null
+                    ? parseFloat(data.avgT1).toFixed(1)
                     : "N/A",
-                avgS2:
-                  data.avgS2 !== null
-                    ? parseFloat(data.avgS2).toFixed(1)
+                avgT2:
+                  data.avgT2 !== null
+                    ? parseFloat(data.avgT2).toFixed(1)
                     : "N/A",
-                avgS3:
-                  data.avgS3 !== null
-                    ? parseFloat(data.avgS3).toFixed(1)
+                avgT3:
+                  data.avgT3 !== null
+                    ? parseFloat(data.avgT3).toFixed(1)
                     : "N/A",
-                avgS4:
-                  data.avgS4 !== null
-                    ? parseFloat(data.avgS4).toFixed(1)
+                avgT4:
+                  data.avgT4 !== null
+                    ? parseFloat(data.avgT4).toFixed(1)
                     : "N/A",
-                avgS5:
-                  data.avgS5 !== null
-                    ? parseFloat(data.avgS5).toFixed(1)
+                avgT5:
+                  data.avgT5 !== null
+                    ? parseFloat(data.avgT5).toFixed(1)
                     : "N/A",
-                avgS6:
-                  data.avgS6 !== null
-                    ? parseFloat(data.avgS6).toFixed(1)
+                avgT6:
+                  data.avgT6 !== null
+                    ? parseFloat(data.avgT6).toFixed(1)
                     : "N/A",
-                avgS7:
-                  data.avgS7 !== null
-                    ? parseFloat(data.avgS7).toFixed(1)
+                avgT7:
+                  data.avgT7 !== null
+                    ? parseFloat(data.avgT7).toFixed(1)
                     : "N/A",
-                avgS8:
-                  data.avgS8 !== null
-                    ? parseFloat(data.avgS8).toFixed(1)
+                avgT8:
+                  data.avgT8 !== null
+                    ? parseFloat(data.avgT8).toFixed(1)
                     : "N/A",
-                avgS9:
-                  data.avgS9 !== null
-                    ? parseFloat(data.avgS9).toFixed(1)
+                avgT9:
+                  data.avgT9 !== null
+                    ? parseFloat(data.avgT9).toFixed(1)
                     : "N/A",
-                avgS10:
-                  data.avgS10 !== null
-                    ? parseFloat(data.avgS10).toFixed(1)
+                avgT10:
+                  data.avgT10 !== null
+                    ? parseFloat(data.avgT10).toFixed(1)
                     : "N/A",
-                avgS11:
-                  data.avgS11 !== null
-                    ? parseFloat(data.avgS11).toFixed(1)
+                avgT11:
+                  data.avgT11 !== null
+                    ? parseFloat(data.avgT11).toFixed(1)
                     : "N/A",
-                avgS12:
-                  data.avgS12 !== null
-                    ? parseFloat(data.avgS12).toFixed(1)
+                avgT12:
+                  data.avgT12 !== null
+                    ? parseFloat(data.avgT12).toFixed(1)
                     : "N/A",
-                avgS13:
-                  data.avgS13 !== null
-                    ? parseFloat(data.avgS13).toFixed(1)
+                avgT13:
+                  data.avgT13 !== null
+                    ? parseFloat(data.avgT13).toFixed(1)
                     : "N/A",
-                avgS14:
-                  data.avgS14 !== null
-                    ? parseFloat(data.avgS14).toFixed(1)
+                avgT14:
+                  data.avgT14 !== null
+                    ? parseFloat(data.avgT14).toFixed(1)
                     : "N/A",
-                avgS15:
-                  data.avgS15 !== null
-                    ? parseFloat(data.avgS15).toFixed(1)
+                avgT15:
+                  data.avgT15 !== null
+                    ? parseFloat(data.avgT15).toFixed(1)
                     : "N/A",
               };
             });
@@ -1069,109 +1070,109 @@ export const getHindalcoAverageReport = async (req, res) => {
           },
           {
             $project: {
-              S1: {
+              T1: {
                 $cond: {
-                  if: { $eq: ["$S1", "N/A"] },
+                  if: { $eq: ["$T1", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S1" },
+                  else: { $toDouble: "$T1" },
                 },
               },
-              S2: {
+              T2: {
                 $cond: {
-                  if: { $eq: ["$S2", "N/A"] },
+                  if: { $eq: ["$T2", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S2" },
+                  else: { $toDouble: "$T2" },
                 },
               },
-              S3: {
+              T3: {
                 $cond: {
-                  if: { $eq: ["$S3", "N/A"] },
+                  if: { $eq: ["$T3", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S3" },
+                  else: { $toDouble: "$T3" },
                 },
               },
-              S4: {
+              T4: {
                 $cond: {
-                  if: { $eq: ["$S4", "N/A"] },
+                  if: { $eq: ["$T4", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S4" },
+                  else: { $toDouble: "$T4" },
                 },
               },
-              S5: {
+              T5: {
                 $cond: {
-                  if: { $eq: ["$S5", "N/A"] },
+                  if: { $eq: ["$T5", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S5" },
+                  else: { $toDouble: "$T5" },
                 },
               },
-              S6: {
+              T6: {
                 $cond: {
-                  if: { $eq: ["$S6", "N/A"] },
+                  if: { $eq: ["$T6", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S6" },
+                  else: { $toDouble: "$T6" },
                 },
               },
-              S7: {
+              T7: {
                 $cond: {
-                  if: { $eq: ["$S7", "N/A"] },
+                  if: { $eq: ["$T7", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S7" },
+                  else: { $toDouble: "$T7" },
                 },
               },
-              S8: {
+              T8: {
                 $cond: {
-                  if: { $eq: ["$S8", "N/A"] },
+                  if: { $eq: ["$T8", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S8" },
+                  else: { $toDouble: "$T8" },
                 },
               },
-              S9: {
+              T9: {
                 $cond: {
-                  if: { $eq: ["$S9", "N/A"] },
+                  if: { $eq: ["$T9", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S9" },
+                  else: { $toDouble: "$T9" },
                 },
               },
-              S10: {
+              T10: {
                 $cond: {
-                  if: { $eq: ["$S10", "N/A"] },
+                  if: { $eq: ["$T10", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S10" },
+                  else: { $toDouble: "$T10" },
                 },
               },
-              S11: {
+              T11: {
                 $cond: {
-                  if: { $eq: ["$S11", "N/A"] },
+                  if: { $eq: ["$T11", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S11" },
+                  else: { $toDouble: "$T11" },
                 },
               },
-              S12: {
+              T12: {
                 $cond: {
-                  if: { $eq: ["$S12", "N/A"] },
+                  if: { $eq: ["$T12", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S12" },
+                  else: { $toDouble: "$T12" },
                 },
               },
-              S13: {
+              T13: {
                 $cond: {
-                  if: { $eq: ["$S13", "N/A"] },
+                  if: { $eq: ["$T13", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S13" },
+                  else: { $toDouble: "$T13" },
                 },
               },
-              S14: {
+              T14: {
                 $cond: {
-                  if: { $eq: ["$S14", "N/A"] },
+                  if: { $eq: ["$T14", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S14" },
+                  else: { $toDouble: "$T14" },
                 },
               },
-              S15: {
+              T15: {
                 $cond: {
-                  if: { $eq: ["$S15", "N/A"] },
+                  if: { $eq: ["$T15", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S15" },
+                  else: { $toDouble: "$T15" },
                 },
               },
               day: {
@@ -1185,21 +1186,21 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $group: {
               _id: "$day",
-              avgS1: { $avg: "$S1" },
-              avgS2: { $avg: "$S2" },
-              avgS3: { $avg: "$S3" },
-              avgS4: { $avg: "$S4" },
-              avgS5: { $avg: "$S5" },
-              avgS6: { $avg: "$S6" },
-              avgS7: { $avg: "$S7" },
-              avgS8: { $avg: "$S8" },
-              avgS9: { $avg: "$S9" },
-              avgS10: { $avg: "$S10" },
-              avgS11: { $avg: "$S11" },
-              avgS12: { $avg: "$S12" },
-              avgS13: { $avg: "$S13" },
-              avgS14: { $avg: "$S14" },
-              avgS15: { $avg: "$S15" },
+              avgT1: { $avg: "$T1" },
+              avgT2: { $avg: "$T2" },
+              avgT3: { $avg: "$T3" },
+              avgT4: { $avg: "$T4" },
+              avgT5: { $avg: "$T5" },
+              avgT6: { $avg: "$T6" },
+              avgT7: { $avg: "$T7" },
+              avgT8: { $avg: "$T8" },
+              avgT9: { $avg: "$T9" },
+              avgT10: { $avg: "$T10" },
+              avgT11: { $avg: "$T11" },
+              avgT12: { $avg: "$T12" },
+              avgT13: { $avg: "$T13" },
+              avgT14: { $avg: "$T14" },
+              avgT15: { $avg: "$T15" },
             },
           },
           {
@@ -1225,21 +1226,21 @@ export const getHindalcoAverageReport = async (req, res) => {
                   },
                 ],
               },
-              avgS1: 1,
-              avgS2: 1,
-              avgS3: 1,
-              avgS4: 1,
-              avgS5: 1,
-              avgS6: 1,
-              avgS7: 1,
-              avgS8: 1,
-              avgS9: 1,
-              avgS10: 1,
-              avgS11: 1,
-              avgS12: 1,
-              avgS13: 1,
-              avgS14: 1,
-              avgS15: 1,
+              avgT1: 1,
+              avgT2: 1,
+              avgT3: 1,
+              avgT4: 1,
+              avgT5: 1,
+              avgT6: 1,
+              avgT7: 1,
+              avgT8: 1,
+              avgT9: 1,
+              avgT10: 1,
+              avgT11: 1,
+              avgT12: 1,
+              avgT13: 1,
+              avgT14: 1,
+              avgT15: 1,
             },
           },
           {
@@ -1258,65 +1259,65 @@ export const getHindalcoAverageReport = async (req, res) => {
             .map((data) => {
               return {
                 ...data,
-                avgS1:
-                  data.avgS1 !== null
-                    ? parseFloat(data.avgS1).toFixed(1)
+                avgT1:
+                  data.avgT1 !== null
+                    ? parseFloat(data.avgT1).toFixed(1)
                     : "N/A",
-                avgS2:
-                  data.avgS2 !== null
-                    ? parseFloat(data.avgS2).toFixed(1)
+                avgT2:
+                  data.avgT2 !== null
+                    ? parseFloat(data.avgT2).toFixed(1)
                     : "N/A",
-                avgS3:
-                  data.avgS3 !== null
-                    ? parseFloat(data.avgS3).toFixed(1)
+                avgT3:
+                  data.avgT3 !== null
+                    ? parseFloat(data.avgT3).toFixed(1)
                     : "N/A",
-                avgS4:
-                  data.avgS4 !== null
-                    ? parseFloat(data.avgS4).toFixed(1)
+                avgT4:
+                  data.avgT4 !== null
+                    ? parseFloat(data.avgT4).toFixed(1)
                     : "N/A",
-                avgS5:
-                  data.avgS5 !== null
-                    ? parseFloat(data.avgS5).toFixed(1)
+                avgT5:
+                  data.avgT5 !== null
+                    ? parseFloat(data.avgT5).toFixed(1)
                     : "N/A",
-                avgS6:
-                  data.avgS6 !== null
-                    ? parseFloat(data.avgS6).toFixed(1)
+                avgT6:
+                  data.avgT6 !== null
+                    ? parseFloat(data.avgT6).toFixed(1)
                     : "N/A",
-                avgS7:
-                  data.avgS7 !== null
-                    ? parseFloat(data.avgS7).toFixed(1)
+                avgT7:
+                  data.avgT7 !== null
+                    ? parseFloat(data.avgT7).toFixed(1)
                     : "N/A",
-                avgS8:
-                  data.avgS8 !== null
-                    ? parseFloat(data.avgS8).toFixed(1)
+                avgT8:
+                  data.avgT8 !== null
+                    ? parseFloat(data.avgT8).toFixed(1)
                     : "N/A",
-                avgS9:
-                  data.avgS9 !== null
-                    ? parseFloat(data.avgS9).toFixed(1)
+                avgT9:
+                  data.avgT9 !== null
+                    ? parseFloat(data.avgT9).toFixed(1)
                     : "N/A",
-                avgS10:
-                  data.avgS10 !== null
-                    ? parseFloat(data.avgS10).toFixed(1)
+                avgT10:
+                  data.avgT10 !== null
+                    ? parseFloat(data.avgT10).toFixed(1)
                     : "N/A",
-                avgS11:
-                  data.avgS11 !== null
-                    ? parseFloat(data.avgS11).toFixed(1)
+                avgT11:
+                  data.avgT11 !== null
+                    ? parseFloat(data.avgT11).toFixed(1)
                     : "N/A",
-                avgS12:
-                  data.avgS12 !== null
-                    ? parseFloat(data.avgS12).toFixed(1)
+                avgT12:
+                  data.avgT12 !== null
+                    ? parseFloat(data.avgT12).toFixed(1)
                     : "N/A",
-                avgS13:
-                  data.avgS13 !== null
-                    ? parseFloat(data.avgS13).toFixed(1)
+                avgT13:
+                  data.avgT13 !== null
+                    ? parseFloat(data.avgT13).toFixed(1)
                     : "N/A",
-                avgS14:
-                  data.avgS14 !== null
-                    ? parseFloat(data.avgS14).toFixed(1)
+                avgT14:
+                  data.avgT14 !== null
+                    ? parseFloat(data.avgT14).toFixed(1)
                     : "N/A",
-                avgS15:
-                  data.avgS15 !== null
-                    ? parseFloat(data.avgS15).toFixed(1)
+                avgT15:
+                  data.avgT15 !== null
+                    ? parseFloat(data.avgT15).toFixed(1)
                     : "N/A",
               };
             });
@@ -1342,109 +1343,109 @@ export const getHindalcoAverageReport = async (req, res) => {
           },
           {
             $project: {
-              S1: {
+              T1: {
                 $cond: {
-                  if: { $eq: ["$S1", "N/A"] },
+                  if: { $eq: ["$T1", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S1" },
+                  else: { $toDouble: "$T1" },
                 },
               },
-              S2: {
+              T2: {
                 $cond: {
-                  if: { $eq: ["$S2", "N/A"] },
+                  if: { $eq: ["$T2", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S2" },
+                  else: { $toDouble: "$T2" },
                 },
               },
-              S3: {
+              T3: {
                 $cond: {
-                  if: { $eq: ["$S3", "N/A"] },
+                  if: { $eq: ["$T3", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S3" },
+                  else: { $toDouble: "$T3" },
                 },
               },
-              S4: {
+              T4: {
                 $cond: {
-                  if: { $eq: ["$S4", "N/A"] },
+                  if: { $eq: ["$T4", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S4" },
+                  else: { $toDouble: "$T4" },
                 },
               },
-              S5: {
+              T5: {
                 $cond: {
-                  if: { $eq: ["$S5", "N/A"] },
+                  if: { $eq: ["$T5", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S5" },
+                  else: { $toDouble: "$T5" },
                 },
               },
-              S6: {
+              T6: {
                 $cond: {
-                  if: { $eq: ["$S6", "N/A"] },
+                  if: { $eq: ["$T6", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S6" },
+                  else: { $toDouble: "$T6" },
                 },
               },
-              S7: {
+              T7: {
                 $cond: {
-                  if: { $eq: ["$S7", "N/A"] },
+                  if: { $eq: ["$T7", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S7" },
+                  else: { $toDouble: "$T7" },
                 },
               },
-              S8: {
+              T8: {
                 $cond: {
-                  if: { $eq: ["$S8", "N/A"] },
+                  if: { $eq: ["$T8", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S8" },
+                  else: { $toDouble: "$T8" },
                 },
               },
-              S9: {
+              T9: {
                 $cond: {
-                  if: { $eq: ["$S9", "N/A"] },
+                  if: { $eq: ["$T9", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S9" },
+                  else: { $toDouble: "$T9" },
                 },
               },
-              S10: {
+              T10: {
                 $cond: {
-                  if: { $eq: ["$S10", "N/A"] },
+                  if: { $eq: ["$T10", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S10" },
+                  else: { $toDouble: "$T10" },
                 },
               },
-              S11: {
+              T11: {
                 $cond: {
-                  if: { $eq: ["$S11", "N/A"] },
+                  if: { $eq: ["$T11", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S11" },
+                  else: { $toDouble: "$T11" },
                 },
               },
-              S12: {
+              T12: {
                 $cond: {
-                  if: { $eq: ["$S12", "N/A"] },
+                  if: { $eq: ["$T12", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S12" },
+                  else: { $toDouble: "$T12" },
                 },
               },
-              S13: {
+              T13: {
                 $cond: {
-                  if: { $eq: ["$S13", "N/A"] },
+                  if: { $eq: ["$T13", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S13" },
+                  else: { $toDouble: "$T13" },
                 },
               },
-              S14: {
+              T14: {
                 $cond: {
-                  if: { $eq: ["$S14", "N/A"] },
+                  if: { $eq: ["$T14", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S14" },
+                  else: { $toDouble: "$T14" },
                 },
               },
-              S15: {
+              T15: {
                 $cond: {
-                  if: { $eq: ["$S15", "N/A"] },
+                  if: { $eq: ["$T15", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S15" },
+                  else: { $toDouble: "$T15" },
                 },
               },
               originalTime: "$Time",
@@ -1468,21 +1469,21 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $project: {
               _id: 0, // Exclude the _id field
-              S1: 1,
-              S2: 1,
-              S3: 1,
-              S4: 1,
-              S5: 1,
-              S6: 1,
-              S7: 1,
-              S8: 1,
-              S9: 1,
-              S10: 1,
-              S11: 1,
-              S12: 1,
-              S13: 1,
-              S14: 1,
-              S15: 1,
+              T1: 1,
+              T2: 1,
+              T3: 1,
+              T4: 1,
+              T5: 1,
+              T6: 1,
+              T7: 1,
+              T8: 1,
+              T9: 1,
+              T10: 1,
+              T11: 1,
+              T12: 1,
+              T13: 1,
+              T14: 1,
+              T15: 1,
               Time: "$originalTime", // Include hour if needed
             },
           },
@@ -1538,109 +1539,109 @@ export const getHindalcoAverageReport = async (req, res) => {
           },
           {
             $project: {
-              S1: {
+              T1: {
                 $cond: {
-                  if: { $eq: ["$S1", "N/A"] },
+                  if: { $eq: ["$T1", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S1" },
+                  else: { $toDouble: "$T1" },
                 },
               },
-              S2: {
+              T2: {
                 $cond: {
-                  if: { $eq: ["$S2", "N/A"] },
+                  if: { $eq: ["$T2", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S2" },
+                  else: { $toDouble: "$T2" },
                 },
               },
-              S3: {
+              T3: {
                 $cond: {
-                  if: { $eq: ["$S3", "N/A"] },
+                  if: { $eq: ["$T3", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S3" },
+                  else: { $toDouble: "$T3" },
                 },
               },
-              S4: {
+              T4: {
                 $cond: {
-                  if: { $eq: ["$S4", "N/A"] },
+                  if: { $eq: ["$T4", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S4" },
+                  else: { $toDouble: "$T4" },
                 },
               },
-              S5: {
+              T5: {
                 $cond: {
-                  if: { $eq: ["$S5", "N/A"] },
+                  if: { $eq: ["$T5", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S5" },
+                  else: { $toDouble: "$T5" },
                 },
               },
-              S6: {
+              T6: {
                 $cond: {
-                  if: { $eq: ["$S6", "N/A"] },
+                  if: { $eq: ["$T6", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S6" },
+                  else: { $toDouble: "$T6" },
                 },
               },
-              S7: {
+              T7: {
                 $cond: {
-                  if: { $eq: ["$S7", "N/A"] },
+                  if: { $eq: ["$T7", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S7" },
+                  else: { $toDouble: "$T7" },
                 },
               },
-              S8: {
+              T8: {
                 $cond: {
-                  if: { $eq: ["$S8", "N/A"] },
+                  if: { $eq: ["$T8", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S8" },
+                  else: { $toDouble: "$T8" },
                 },
               },
-              S9: {
+              T9: {
                 $cond: {
-                  if: { $eq: ["$S9", "N/A"] },
+                  if: { $eq: ["$T9", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S9" },
+                  else: { $toDouble: "$T9" },
                 },
               },
-              S10: {
+              T10: {
                 $cond: {
-                  if: { $eq: ["$S10", "N/A"] },
+                  if: { $eq: ["$T10", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S10" },
+                  else: { $toDouble: "$T10" },
                 },
               },
-              S11: {
+              T11: {
                 $cond: {
-                  if: { $eq: ["$S11", "N/A"] },
+                  if: { $eq: ["$T11", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S11" },
+                  else: { $toDouble: "$T11" },
                 },
               },
-              S12: {
+              T12: {
                 $cond: {
-                  if: { $eq: ["$S12", "N/A"] },
+                  if: { $eq: ["$T12", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S12" },
+                  else: { $toDouble: "$T12" },
                 },
               },
-              S13: {
+              T13: {
                 $cond: {
-                  if: { $eq: ["$S13", "N/A"] },
+                  if: { $eq: ["$T13", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S13" },
+                  else: { $toDouble: "$T13" },
                 },
               },
-              S14: {
+              T14: {
                 $cond: {
-                  if: { $eq: ["$S14", "N/A"] },
+                  if: { $eq: ["$T14", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S14" },
+                  else: { $toDouble: "$T14" },
                 },
               },
-              S15: {
+              T15: {
                 $cond: {
-                  if: { $eq: ["$S15", "N/A"] },
+                  if: { $eq: ["$T15", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S15" },
+                  else: { $toDouble: "$T15" },
                 },
               },
               originalTime: "$Time",
@@ -1664,21 +1665,21 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $project: {
               _id: 0, // Exclude the _id field
-              S1: 1,
-              S2: 1,
-              S3: 1,
-              S4: 1,
-              S5: 1,
-              S6: 1,
-              S7: 1,
-              S8: 1,
-              S9: 1,
-              S10: 1,
-              S11: 1,
-              S12: 1,
-              S13: 1,
-              S14: 1,
-              S15: 1,
+              T1: 1,
+              T2: 1,
+              T3: 1,
+              T4: 1,
+              T5: 1,
+              T6: 1,
+              T7: 1,
+              T8: 1,
+              T9: 1,
+              T10: 1,
+              T11: 1,
+              T12: 1,
+              T13: 1,
+              T14: 1,
+              T15: 1,
               Time: "$originalTime", // Include minute if needed
             },
           },
@@ -1732,109 +1733,109 @@ export const getHindalcoAverageReport = async (req, res) => {
           },
           {
             $project: {
-              S1: {
+              T1: {
                 $cond: {
-                  if: { $eq: ["$S1", "N/A"] },
+                  if: { $eq: ["$T1", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S1" },
+                  else: { $toDouble: "$T1" },
                 },
               },
-              S2: {
+              T2: {
                 $cond: {
-                  if: { $eq: ["$S2", "N/A"] },
+                  if: { $eq: ["$T2", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S2" },
+                  else: { $toDouble: "$T2" },
                 },
               },
-              S3: {
+              T3: {
                 $cond: {
-                  if: { $eq: ["$S3", "N/A"] },
+                  if: { $eq: ["$T3", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S3" },
+                  else: { $toDouble: "$T3" },
                 },
               },
-              S4: {
+              T4: {
                 $cond: {
-                  if: { $eq: ["$S4", "N/A"] },
+                  if: { $eq: ["$T4", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S4" },
+                  else: { $toDouble: "$T4" },
                 },
               },
-              S5: {
+              T5: {
                 $cond: {
-                  if: { $eq: ["$S5", "N/A"] },
+                  if: { $eq: ["$T5", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S5" },
+                  else: { $toDouble: "$T5" },
                 },
               },
-              S6: {
+              T6: {
                 $cond: {
-                  if: { $eq: ["$S6", "N/A"] },
+                  if: { $eq: ["$T6", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S6" },
+                  else: { $toDouble: "$T6" },
                 },
               },
-              S7: {
+              T7: {
                 $cond: {
-                  if: { $eq: ["$S7", "N/A"] },
+                  if: { $eq: ["$T7", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S7" },
+                  else: { $toDouble: "$T7" },
                 },
               },
-              S8: {
+              T8: {
                 $cond: {
-                  if: { $eq: ["$S8", "N/A"] },
+                  if: { $eq: ["$T8", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S8" },
+                  else: { $toDouble: "$T8" },
                 },
               },
-              S9: {
+              T9: {
                 $cond: {
-                  if: { $eq: ["$S9", "N/A"] },
+                  if: { $eq: ["$T9", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S9" },
+                  else: { $toDouble: "$T9" },
                 },
               },
-              S10: {
+              T10: {
                 $cond: {
-                  if: { $eq: ["$S10", "N/A"] },
+                  if: { $eq: ["$T10", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S10" },
+                  else: { $toDouble: "$T10" },
                 },
               },
-              S11: {
+              T11: {
                 $cond: {
-                  if: { $eq: ["$S11", "N/A"] },
+                  if: { $eq: ["$T11", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S11" },
+                  else: { $toDouble: "$T11" },
                 },
               },
-              S12: {
+              T12: {
                 $cond: {
-                  if: { $eq: ["$S12", "N/A"] },
+                  if: { $eq: ["$T12", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S12" },
+                  else: { $toDouble: "$T12" },
                 },
               },
-              S13: {
+              T13: {
                 $cond: {
-                  if: { $eq: ["$S13", "N/A"] },
+                  if: { $eq: ["$T13", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S13" },
+                  else: { $toDouble: "$T13" },
                 },
               },
-              S14: {
+              T14: {
                 $cond: {
-                  if: { $eq: ["$S14", "N/A"] },
+                  if: { $eq: ["$T14", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S14" },
+                  else: { $toDouble: "$T14" },
                 },
               },
-              S15: {
+              T15: {
                 $cond: {
-                  if: { $eq: ["$S15", "N/A"] },
+                  if: { $eq: ["$T15", "N/A"] },
                   then: null,
-                  else: { $toDouble: "$S15" },
+                  else: { $toDouble: "$T15" },
                 },
               },
               originalTime: "$Time",
@@ -1858,21 +1859,21 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $project: {
               _id: 0, // Exclude the _id field
-              S1: 1,
-              S2: 1,
-              S3: 1,
-              S4: 1,
-              S5: 1,
-              S6: 1,
-              S7: 1,
-              S8: 1,
-              S9: 1,
-              S10: 1,
-              S11: 1,
-              S12: 1,
-              S13: 1,
-              S14: 1,
-              S15: 1,
+              T1: 1,
+              T2: 1,
+              T3: 1,
+              T4: 1,
+              T5: 1,
+              T6: 1,
+              T7: 1,
+              T8: 1,
+              T9: 1,
+              T10: 1,
+              T11: 1,
+              T12: 1,
+              T13: 1,
+              T14: 1,
+              T15: 1,
               Time: "$originalTime", // Include minute if needed
             },
           },

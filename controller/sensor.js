@@ -797,6 +797,7 @@ export const getHindalcoAverageReport = async (req, res) => {
           res.json({ success: false, message: "Data not found" });
         }
       } else if (averageOption === "minute") {
+       
         const hindalcoAverageData = await hindalcoTimeModel.aggregate([
           {
             $match: {

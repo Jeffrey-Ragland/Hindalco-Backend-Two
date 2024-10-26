@@ -346,7 +346,7 @@ export const getHindalcoProcess = async (req, res) => {
       const hindalcoData = await hindalcoTimeModel
         .find({ DeviceName: "XY001" })
         .sort({ _id: -1 })
-        .limit(500)
+        .limit(1000)
         .select({
           __v: 0,
           updatedAt: 0,

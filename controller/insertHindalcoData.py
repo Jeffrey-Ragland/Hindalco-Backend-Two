@@ -188,7 +188,7 @@ import time
 # Set the base URL for your API
 BASE_URL = "http://localhost:4000/backend/insertHindalcoData"
 
-def generate_random_increasing_data(previous_values, max_value=900, total_steps=366, current_step=1):
+def generate_random_increasing_data(previous_values, max_value=900, total_steps=732, current_step=1):
     """Generate random sensor data with minimal deviation, gradually increasing to a maximum over specified steps."""
     device_name = "XY001"
     
@@ -218,11 +218,11 @@ def generate_random_increasing_data(previous_values, max_value=900, total_steps=
     return data
 
 def push_data():
-    """Send random increasing data to the API over 366 iterations."""
+    """Send random increasing data to the API over 732 iterations."""
     previous_values = {f"s{i}": 0 for i in range(1, 16)}  # Start with all sensor values at 0
     
-    for step in range(1, 733):  # 366 data points
-        random_increasing_data = generate_random_increasing_data(previous_values, current_step=step)
+    for step in range(1, 733):  # 732 data points
+        random_increasing_data = generate_random_increasing_data(previous_values, total_steps=732, current_step=step)
         
         # Update previous values for the next iteration
         previous_values = {key: value for key, value in random_increasing_data.items() if key.startswith('s')}
@@ -235,9 +235,7 @@ def push_data():
         else:
             print(f"Failed to send data: {response.status_code} - {response.text}")
         
-        time.sleep(1)  # Wait 10 seconds before sending the next set of data
+        time.sleep(0.01)  # Wait 1 second before sending the next set of data
 
 if __name__ == "__main__":
     push_data()
-
-

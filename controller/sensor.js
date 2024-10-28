@@ -191,7 +191,6 @@ export const insertHindalcoData = async (req, res) => {
 export const getHindalcoData = async (req, res) => {
  
   try {
-    console.log('get api triggered')
     const limit = parseInt(req.query.limit);
     const hindalcoData = await hindalcoTimeModel
       // const hindalcoData = await hindalcoModel
@@ -221,7 +220,8 @@ export const updateHindalcoProcess = async (req, res) => {
     });
 
     const calculatedStopTimeObj = new Date(
-      currentDateTime.getTime() + 61 * 60 * 60 * 1000
+      currentDateTime.getTime() + 61 * 60 * 60 * 1000 //61 hours
+      // currentDateTime.getTime() + 60 * 1000 // 1 minute
     ); //calculate stop time
 
     const calculatedStopTimeLocal = calculatedStopTimeObj.toLocaleString(
@@ -307,7 +307,7 @@ export const updateHindalcoProcess = async (req, res) => {
       res.status(500).send(error);
     }
   }
-};
+};3
 
 export const getHindalcoProcess = async (req, res) => {
   try {
@@ -320,6 +320,7 @@ export const getHindalcoProcess = async (req, res) => {
     // console.log('hindalco date range', hindalcoDateRange);
 
     let dateRangeArray = [];
+    const timeLeftNone = '00h : 00m : 00s';
 
     if(hindalcoDateRange) {
       hindalcoDateRange.forEach((entry) => {
@@ -386,6 +387,15 @@ export const getHindalcoProcess = async (req, res) => {
 
       let startTime;
       let stopTime;
+
+      // function to convert custom time to JS date object
+      const parseCustomTimestamp = (timestamp) => {
+        const [datePart, timePart] = timestamp.split(',');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute, second] = timePart.split(':').map(Number);
+
+        return new Date(year, month -1, day, hour, minute, second);
+      }
       
       if(hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
         startTime = hindalcoProcessTwo[0].StartTime;
@@ -396,21 +406,38 @@ export const getHindalcoProcess = async (req, res) => {
       // console.log("auto stop time", stopTime);
 
       if (hindalcoData && stopTime >= currentTimestamp) {
+
+        const currentDate = parseCustomTimestamp(currentTimestamp);
+        const stopDate = parseCustomTimestamp(stopTime);
+
+        const timeLeftMs = stopDate - currentDate;
+
+        const timeLeft = {
+          hours: Math.floor(timeLeftMs / (1000 * 60 * 60)),
+          minutes: Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((timeLeftMs % (1000 * 60)) / 1000),
+        };
+
+        let timeLeftString = `${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s`;
+
+        // console.log(`Time left: ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`)
+        // console.log(`Time left: ${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s`)
+
         // console.log("filter logic loop triggered");
         const filteredData = hindalcoData.filter((data) => {
           const dbDate = data.Time;
           return dbDate >= startTime && dbDate <= stopTime;
         });
 
-        res.status(200).json({ success: true, data: filteredData, inTimeRange: true, dateRange: dateRangeArray });
+        res.status(200).json({ success: true, data: filteredData, inTimeRange: true, dateRange: dateRangeArray, timeLeft: timeLeftString });
       } else {
         //out of time range condition
         // console.log("out of range loop triggered");
-        res.status(200).json({ success: true, inTimeRange: false, dateRange: dateRangeArray });
+        res.status(200).json({ success: true, inTimeRange: false, dateRange: dateRangeArray, timeLeft: timeLeftNone });
       }
     } // stop condition
     else if (hindalcoProcess.ProcessStatus === "Stop") {
-      res.status(200).json({ success: false, inTimeRange: false, dateRange: dateRangeArray });
+      res.status(200).json({ success: false, inTimeRange: false, dateRange: dateRangeArray, timeLeft: timeLeftNone });
     }
   } catch (error) {
     res.status(500).send("Error fetching hindalco process");

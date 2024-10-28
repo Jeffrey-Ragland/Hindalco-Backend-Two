@@ -235,7 +235,7 @@ def push_data():
         else:
             print(f"Failed to send data: {response.status_code} - {response.text}")
         
-        time.sleep(0.01)  # Wait 1 second before sending the next set of data
+        time.sleep(1)  # Wait 1 second before sending the next set of data
 
 if __name__ == "__main__":
     push_data()

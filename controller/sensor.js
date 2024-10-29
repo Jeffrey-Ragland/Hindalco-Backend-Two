@@ -31,8 +31,7 @@ export const login = (req, res) => {
             const redirectUrl = "/";
             const token = jwt.sign(
               { Username: user.Username },
-              "jwt-secret-key-123",
-              { expiresIn: "1d" }
+              "jwt-secret-key-123"
             );
             res.json({ token, redirectUrl });
           } else {

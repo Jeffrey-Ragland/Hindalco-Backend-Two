@@ -187,6 +187,7 @@ import time
 
 # Set the base URL for your API
 BASE_URL = "http://localhost:4000/backend/insertHindalcoData"
+# BASE_URL = "https://hindalco.xyma.live/backend/insertHindalcoData"
 
 def generate_random_increasing_data(previous_values, max_value=900, total_steps=732, current_step=1):
     """Generate random sensor data with minimal deviation, gradually increasing to a maximum over specified steps."""

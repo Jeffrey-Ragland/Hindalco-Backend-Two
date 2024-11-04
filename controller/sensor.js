@@ -139,8 +139,10 @@ export const insertHindalcoData = async (req, res) => {
 
   // const fullYear = `20${year}`;
 
-  const timestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+  // const timestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
   // console.log('timestamp', timestamp);
+  const timestamp = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+
 
   try {
     const hindalcoData = {
@@ -233,14 +235,14 @@ export const updateHindalcoProcess = async (req, res) => {
     const [month, date, year] = datePart.split("/");
     const [hour, minute, second] = trimmedTimePart.split(":");
 
-    const buttonClickedTime = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+    const buttonClickedTime = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
 
     const [datePart2, timePart2] = calculatedStopTimeLocal.split(",");
     const trimmedTimePart2 = timePart2.trim();
     const [month2, date2, year2] = datePart2.split("/");
     const [hour2, minute2, second2] = trimmedTimePart2.split(":");
     //  to convert local stop time to our custom format
-    const calculatedStopTimeCustom = `${year2}-${month2}-${date2},${hour2}:${minute2}:${second2}`;
+    const calculatedStopTimeCustom = `${year2}-${month2.padStart(2, '0')}-${date2.padStart(2, '0')},${hour2.padStart(2, '0')}:${minute2.padStart(2, '0')}:${second2.padStart(2, '0')}`;
 
     try {
       await hindalcoProcessModel.findOneAndUpdate(
@@ -280,7 +282,7 @@ export const updateHindalcoProcess = async (req, res) => {
     const [month, date, year] = datePart.split("/");
     const [hour, minute, second] = trimmedTimePart.split(":");
 
-    const buttonClickedTime = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+    const buttonClickedTime = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
 
     try {
       await hindalcoProcessModel.findOneAndUpdate(
@@ -382,7 +384,7 @@ export const getHindalcoProcess = async (req, res) => {
       const [hour, minute, second] = trimmedTimePart.split(":");
 
       // to get current date and time in our custom format
-      const currentTimestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
+      const currentTimestamp = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
 
       let startTime;
       let stopTime;

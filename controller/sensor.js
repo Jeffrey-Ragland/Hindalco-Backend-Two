@@ -448,7 +448,7 @@ export const getHindalcoProcess = async (req, res) => {
 
 export const getHindalcoReport = async (req, res) => {
   try {
-    console.log('reports api triggered');
+    // console.log('reports api triggered');
     const {
       projectName,
       fromDate,

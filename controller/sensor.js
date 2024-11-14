@@ -143,10 +143,20 @@ export const insertHindalcoData = async (req, res) => {
 
   // const timestamp = `${year}-${month}-${date},${hour}:${minute}:${second}`;
   // console.log('timestamp', timestamp);
-  const timestamp = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
-
+  const timestamp = `${year}-${month.padStart(2, "0")}-${date.padStart(
+    2,
+    "0"
+  )},${hour.padStart(2, "0")}:${minute.padStart(2, "0")}:${second.padStart(
+    2,
+    "0"
+  )}`;
 
   try {
+    const hindalcoProcessTwo = await hindalcoProcessModelTwo
+      .find({ DeviceName: "XY001" })
+      .sort({ _id: -1 })
+      .limit(1);
+
     const hindalcoData = {
       DeviceName: deviceName,
       T1: s1,
@@ -168,6 +178,8 @@ export const insertHindalcoData = async (req, res) => {
       DeviceSignal: deviceSignal,
       DeviceBattery: deviceBattery,
       Time: timestamp,
+      LineName: hindalcoProcessTwo[0].LineName,
+      PotNumber: hindalcoProcessTwo[0].PotNumber,
     };
     await hindalcoTimeModel.create(hindalcoData);
 
@@ -192,7 +204,6 @@ export const insertHindalcoData = async (req, res) => {
 };
 
 export const getHindalcoData = async (req, res) => {
- 
   try {
     const limit = parseInt(req.query.limit);
     const hindalcoData = await hindalcoTimeModel
@@ -200,7 +211,13 @@ export const getHindalcoData = async (req, res) => {
       .find({ DeviceName: "XY001" }) //static device number
       .sort({ _id: -1 })
       .limit(limit)
-      .select({ __v: 0, updatedAt: 0, DeviceName: 0 });
+      .select({
+        __v: 0,
+        updatedAt: 0,
+        DeviceName: 0,
+        LineName: 0,
+        PotNumber: 0,
+      });
 
     if (hindalcoData.length > 0) {
       res.status(200).json({ success: true, data: hindalcoData });
@@ -213,7 +230,8 @@ export const getHindalcoData = async (req, res) => {
 };
 
 export const updateHindalcoProcess = async (req, res) => {
-  const { processStatus } = req.body;
+  const { processStatus, selectedThermocouples, selectedLine, potNumber } =
+    req.body;
 
   if (processStatus === "Start") {
     const currentDateTime = new Date();
@@ -237,14 +255,26 @@ export const updateHindalcoProcess = async (req, res) => {
     const [month, date, year] = datePart.split("/");
     const [hour, minute, second] = trimmedTimePart.split(":");
 
-    const buttonClickedTime = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+    const buttonClickedTime = `${year}-${month.padStart(
+      2,
+      "0"
+    )}-${date.padStart(2, "0")},${hour.padStart(2, "0")}:${minute.padStart(
+      2,
+      "0"
+    )}:${second.padStart(2, "0")}`;
 
     const [datePart2, timePart2] = calculatedStopTimeLocal.split(",");
     const trimmedTimePart2 = timePart2.trim();
     const [month2, date2, year2] = datePart2.split("/");
     const [hour2, minute2, second2] = trimmedTimePart2.split(":");
     //  to convert local stop time to our custom format
-    const calculatedStopTimeCustom = `${year2}-${month2.padStart(2, '0')}-${date2.padStart(2, '0')},${hour2.padStart(2, '0')}:${minute2.padStart(2, '0')}:${second2.padStart(2, '0')}`;
+    const calculatedStopTimeCustom = `${year2}-${month2.padStart(
+      2,
+      "0"
+    )}-${date2.padStart(2, "0")},${hour2.padStart(2, "0")}:${minute2.padStart(
+      2,
+      "0"
+    )}:${second2.padStart(2, "0")}`;
 
     try {
       await hindalcoProcessModel.findOneAndUpdate(
@@ -264,6 +294,9 @@ export const updateHindalcoProcess = async (req, res) => {
         StartTime: buttonClickedTime,
         AutoStopTime: calculatedStopTimeCustom,
         ActualStopTime: "",
+        SelectedThermocouples: selectedThermocouples,
+        LineName: selectedLine,
+        PotNumber: potNumber,
       };
 
       await hindalcoProcessModelTwo.create(processData);
@@ -284,7 +317,13 @@ export const updateHindalcoProcess = async (req, res) => {
     const [month, date, year] = datePart.split("/");
     const [hour, minute, second] = trimmedTimePart.split(":");
 
-    const buttonClickedTime = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+    const buttonClickedTime = `${year}-${month.padStart(
+      2,
+      "0"
+    )}-${date.padStart(2, "0")},${hour.padStart(2, "0")}:${minute.padStart(
+      2,
+      "0"
+    )}:${second.padStart(2, "0")}`;
 
     try {
       await hindalcoProcessModel.findOneAndUpdate(
@@ -301,7 +340,11 @@ export const updateHindalcoProcess = async (req, res) => {
 
       await hindalcoProcessModelTwo.findOneAndUpdate(
         {},
-        { $set: { ActualStopTime: buttonClickedTime } },
+        {
+          $set: {
+            ActualStopTime: buttonClickedTime,
+          },
+        },
         { sort: { _id: -1 }, new: true }
       );
 
@@ -310,11 +353,10 @@ export const updateHindalcoProcess = async (req, res) => {
       res.status(500).send(error);
     }
   }
-};3
+};
 
 export const getHindalcoProcess = async (req, res) => {
   try {
-
     const hindalcoDateRange = await hindalcoProcessModelTwo
       .find({ DeviceName: "XY001" })
       .sort({ _id: -1 })
@@ -323,9 +365,9 @@ export const getHindalcoProcess = async (req, res) => {
     // console.log('hindalco date range', hindalcoDateRange);
 
     let dateRangeArray = [];
-    const timeLeftNone = '00h : 00m : 00s';
+    const timeLeftNone = "00h : 00m : 00s";
 
-    if(hindalcoDateRange) {
+    if (hindalcoDateRange) {
       hindalcoDateRange.forEach((entry) => {
         const stopTime =
           entry.ActualStopTime !== ""
@@ -360,7 +402,7 @@ export const getHindalcoProcess = async (req, res) => {
           DeviceTemperature: 0,
         });
 
-        // console.log('hindalco data', hindalcoData)
+      // console.log('hindalco data', hindalcoData)
 
       const hindalcoProcessTwo = await hindalcoProcessModelTwo
         .find({ DeviceName: "XY001" })
@@ -386,21 +428,27 @@ export const getHindalcoProcess = async (req, res) => {
       const [hour, minute, second] = trimmedTimePart.split(":");
 
       // to get current date and time in our custom format
-      const currentTimestamp = `${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')},${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+      const currentTimestamp = `${year}-${month.padStart(
+        2,
+        "0"
+      )}-${date.padStart(2, "0")},${hour.padStart(2, "0")}:${minute.padStart(
+        2,
+        "0"
+      )}:${second.padStart(2, "0")}`;
 
       let startTime;
       let stopTime;
 
       // function to convert custom time to JS date object
       const parseCustomTimestamp = (timestamp) => {
-        const [datePart, timePart] = timestamp.split(',');
-        const [year, month, day] = datePart.split('-').map(Number);
-        const [hour, minute, second] = timePart.split(':').map(Number);
+        const [datePart, timePart] = timestamp.split(",");
+        const [year, month, day] = datePart.split("-").map(Number);
+        const [hour, minute, second] = timePart.split(":").map(Number);
 
-        return new Date(year, month -1, day, hour, minute, second);
-      }
-      
-      if(hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
+        return new Date(year, month - 1, day, hour, minute, second);
+      };
+
+      if (hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
         startTime = hindalcoProcessTwo[0].StartTime;
         stopTime = hindalcoProcessTwo[0].AutoStopTime;
       }
@@ -409,7 +457,6 @@ export const getHindalcoProcess = async (req, res) => {
       // console.log("auto stop time", stopTime);
 
       if (hindalcoData && stopTime >= currentTimestamp) {
-
         const currentDate = parseCustomTimestamp(currentTimestamp);
         const stopDate = parseCustomTimestamp(stopTime);
 
@@ -421,7 +468,12 @@ export const getHindalcoProcess = async (req, res) => {
           seconds: Math.floor((timeLeftMs % (1000 * 60)) / 1000),
         };
 
-        let timeLeftString = `${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s`;
+        let timeLeftString = `${String(timeLeft.hours).padStart(
+          2,
+          "0"
+        )}h : ${String(timeLeft.minutes).padStart(2, "0")}m : ${String(
+          timeLeft.seconds
+        ).padStart(2, "0")}s`;
 
         // console.log(`Time left: ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`)
         // console.log(`Time left: ${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s`)
@@ -432,15 +484,34 @@ export const getHindalcoProcess = async (req, res) => {
           return dbDate >= startTime && dbDate <= stopTime;
         });
 
-        res.status(200).json({ success: true, data: filteredData, inTimeRange: true, dateRange: dateRangeArray, timeLeft: timeLeftString });
+        res.status(200).json({
+          success: true,
+          data: filteredData,
+          inTimeRange: true,
+          dateRange: dateRangeArray,
+          timeLeft: timeLeftString,
+          selectedThermocouples: hindalcoProcessTwo[0].SelectedThermocouples,
+        });
       } else {
         //out of time range condition
         // console.log("out of range loop triggered");
-        res.status(200).json({ success: true, inTimeRange: false, dateRange: dateRangeArray, timeLeft: timeLeftNone });
+        res.status(200).json({
+          success: true,
+          inTimeRange: false,
+          dateRange: dateRangeArray,
+          timeLeft: timeLeftNone,
+          selectedThermocouples: [],
+        });
       }
     } // stop condition
     else if (hindalcoProcess.ProcessStatus === "Stop") {
-      res.status(200).json({ success: false, inTimeRange: false, dateRange: dateRangeArray, timeLeft: timeLeftNone });
+      res.status(200).json({
+        success: false,
+        inTimeRange: false,
+        dateRange: dateRangeArray,
+        timeLeft: timeLeftNone,
+        selectedThermocouples: [],
+      });
     }
   } catch (error) {
     res.status(500).send("Error fetching hindalco process");
@@ -502,13 +573,13 @@ export const getHindalcoReport = async (req, res) => {
       });
 
       res.status(200).json({ success: true, data: filteredData });
-    } else if(startDate && stopDate) { //for threshold graph in dashboard page
+    } else if (startDate && stopDate) {
+      //for threshold graph in dashboard page
 
       const filteredData = hindalcoReportData.filter((data) => {
-
-        if(data.Time) {
+        if (data.Time) {
           const dbDate = data.Time;
-          return dbDate >= startDate && dbDate <= stopDate
+          return dbDate >= startDate && dbDate <= stopDate;
         }
       });
       res.status(200).json({ success: true, data: filteredData });
@@ -827,7 +898,6 @@ export const getHindalcoAverageReport = async (req, res) => {
           res.json({ success: false, message: "Data not found" });
         }
       } else if (averageOption === "minute") {
-       
         const hindalcoAverageData = await hindalcoTimeModel.aggregate([
           {
             $match: {

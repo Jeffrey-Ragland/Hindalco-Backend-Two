@@ -76,6 +76,9 @@ export const validateToken = (req, res) => {
 
 // http://13.202.211.76:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
 
+// backup api
+// http://43.204.133.45:4000/sensor/insertHindalcoData?deviceName=XY001&s1=100&s2=100&s3=100&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
+
 export const insertHindalcoData = async (req, res) => {
   const {
     deviceName,
@@ -157,6 +160,9 @@ export const insertHindalcoData = async (req, res) => {
       .sort({ _id: -1 })
       .limit(1);
 
+    const selectedThermocouples = hindalcoProcessTwo[0].SelectedThermocouples;
+    console.log("selected thermocouples", selectedThermocouples);
+
     const hindalcoData = {
       DeviceName: deviceName,
       T1: s1,
@@ -181,6 +187,21 @@ export const insertHindalcoData = async (req, res) => {
       LineName: hindalcoProcessTwo[0].LineName,
       PotNumber: hindalcoProcessTwo[0].PotNumber,
     };
+
+    if (!selectedThermocouples.length) {
+      for (let i = 1; i <= 15; i++) {
+        const key = `T${i}`;
+        hindalcoData[key] = "N/A";
+      }
+    } else {
+      for (let i = 1; i <= 15; i++) {
+        const key = `T${i}`;
+        if (!selectedThermocouples.includes(key)) {
+          hindalcoData[key] = "N/A";
+        }
+      }
+    }
+
     await hindalcoTimeModel.create(hindalcoData);
 
     try {
@@ -343,6 +364,9 @@ export const updateHindalcoProcess = async (req, res) => {
         {
           $set: {
             ActualStopTime: buttonClickedTime,
+            SelectedThermocouples: [],
+            LineName: "",
+            PotNumber: "",
           },
         },
         { sort: { _id: -1 }, new: true }
@@ -365,6 +389,7 @@ export const getHindalcoProcess = async (req, res) => {
     // console.log('hindalco date range', hindalcoDateRange);
 
     let dateRangeArray = [];
+    let thermocoupleConfigurationArray = [];
     const timeLeftNone = "00h : 00m : 00s";
 
     if (hindalcoDateRange) {
@@ -374,9 +399,16 @@ export const getHindalcoProcess = async (req, res) => {
             ? entry.ActualStopTime
             : entry.AutoStopTime;
 
+        const lineName = entry.LineName;
+        const potNumber = entry.PotNumber;
+
         dateRangeArray.push({
           startTime: entry.StartTime,
           stopTime: stopTime,
+        });
+
+        thermocoupleConfigurationArray.push({
+          thermocoupleConfiguration: `${lineName}-Pot:${potNumber}`,
         });
       });
     }
@@ -400,6 +432,8 @@ export const getHindalcoProcess = async (req, res) => {
           DeviceBattery: 0,
           DeviceSignal: 0,
           DeviceTemperature: 0,
+          LineName: 0,
+          PotNumber: 0,
         });
 
       // console.log('hindalco data', hindalcoData)
@@ -489,16 +523,29 @@ export const getHindalcoProcess = async (req, res) => {
           data: filteredData,
           inTimeRange: true,
           dateRange: dateRangeArray,
+          thermocoupleConfiguration: thermocoupleConfigurationArray,
           timeLeft: timeLeftString,
           selectedThermocouples: hindalcoProcessTwo[0].SelectedThermocouples,
         });
       } else {
         //out of time range condition
+        await hindalcoProcessModelTwo.findOneAndUpdate(
+          {},
+          {
+            $set: {
+              SelectedThermocouples: [],
+              LineName: "",
+              PotNumber: "",
+            },
+          },
+          { sort: { _id: -1 }, new: true }
+        );
         // console.log("out of range loop triggered");
         res.status(200).json({
           success: true,
           inTimeRange: false,
           dateRange: dateRangeArray,
+          thermocoupleConfiguration: thermocoupleConfigurationArray,
           timeLeft: timeLeftNone,
           selectedThermocouples: [],
         });
@@ -509,6 +556,7 @@ export const getHindalcoProcess = async (req, res) => {
         success: false,
         inTimeRange: false,
         dateRange: dateRangeArray,
+        thermocoupleConfiguration: thermocoupleConfigurationArray,
         timeLeft: timeLeftNone,
         selectedThermocouples: [],
       });

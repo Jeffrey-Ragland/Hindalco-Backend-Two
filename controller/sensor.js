@@ -161,7 +161,7 @@ export const insertHindalcoData = async (req, res) => {
       .limit(1);
 
     const selectedThermocouples = hindalcoProcessTwo[0].SelectedThermocouples;
-    console.log("selected thermocouples", selectedThermocouples);
+    // console.log("selected thermocouples", selectedThermocouples);
 
     const hindalcoData = {
       DeviceName: deviceName,
@@ -226,12 +226,12 @@ export const insertHindalcoData = async (req, res) => {
 
 export const getHindalcoData = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit);
+    // const limit = parseInt(req.query.limit);
     const hindalcoData = await hindalcoTimeModel
       // const hindalcoData = await hindalcoModel
       .find({ DeviceName: "XY001" }) //static device number
       .sort({ _id: -1 })
-      .limit(limit)
+      .limit(1)
       .select({
         __v: 0,
         updatedAt: 0,
@@ -364,9 +364,6 @@ export const updateHindalcoProcess = async (req, res) => {
         {
           $set: {
             ActualStopTime: buttonClickedTime,
-            SelectedThermocouples: [],
-            LineName: "",
-            PotNumber: "",
           },
         },
         { sort: { _id: -1 }, new: true }
@@ -526,20 +523,22 @@ export const getHindalcoProcess = async (req, res) => {
           thermocoupleConfiguration: thermocoupleConfigurationArray,
           timeLeft: timeLeftString,
           selectedThermocouples: hindalcoProcessTwo[0].SelectedThermocouples,
+          lineName: hindalcoProcessTwo[0].LineName,
+          potNumber: hindalcoProcessTwo[0].PotNumber,
         });
       } else {
         //out of time range condition
-        await hindalcoProcessModelTwo.findOneAndUpdate(
-          {},
-          {
-            $set: {
-              SelectedThermocouples: [],
-              LineName: "",
-              PotNumber: "",
-            },
-          },
-          { sort: { _id: -1 }, new: true }
-        );
+        // await hindalcoProcessModelTwo.findOneAndUpdate(
+        //   {},
+        //   {
+        //     $set: {
+        //       SelectedThermocouples: [],
+        //       LineName: "",
+        //       PotNumber: "",
+        //     },
+        //   },
+        //   { sort: { _id: -1 }, new: true }
+        // );
         // console.log("out of range loop triggered");
         res.status(200).json({
           success: true,
@@ -548,6 +547,8 @@ export const getHindalcoProcess = async (req, res) => {
           thermocoupleConfiguration: thermocoupleConfigurationArray,
           timeLeft: timeLeftNone,
           selectedThermocouples: [],
+          lineName: "",
+          potNumber: "",
         });
       }
     } // stop condition
@@ -559,6 +560,8 @@ export const getHindalcoProcess = async (req, res) => {
         thermocoupleConfiguration: thermocoupleConfigurationArray,
         timeLeft: timeLeftNone,
         selectedThermocouples: [],
+        lineName: "",
+        potNumber: "",
       });
     }
   } catch (error) {
@@ -581,7 +584,13 @@ export const getHindalcoReport = async (req, res) => {
       sensorWiseCount,
       startDate, //threshold graph -> dashboard page
       stopDate, //threshold graph -> dashboard page
+      thermocoupleConfiguration,
     } = req.query;
+
+    // console.log("thermocouple cofig", thermocoupleConfiguration);
+    // const configSplit = thermocoupleConfiguration.split("-Pot:");
+    // console.log("line name: ", configSplit[0]);
+    // console.log("pot number: ", configSplit[1]);
 
     let query = { DeviceName: projectName };
     let sort = { _id: -1 };
@@ -609,18 +618,27 @@ export const getHindalcoReport = async (req, res) => {
 
     const hindalcoReportData = await cursor.exec();
 
-    if (fromDate && toDate) {
+    if (fromDate && toDate && thermocoupleConfiguration) {
       const formattedFromDate = fromDate + ",00:00:00";
       const formattedToDate = toDate + ",23:59:59";
+
+      const configSplit = thermocoupleConfiguration.split("-Pot:");
+      const lineName = configSplit[0]?.trim();
+      const potNumber = configSplit[1]?.trim();
 
       const filteredData = hindalcoReportData.filter((data) => {
         if (data.Time) {
           const dbDate = data.Time;
           return dbDate >= formattedFromDate && dbDate < formattedToDate;
         }
+        return false;
       });
 
-      res.status(200).json({ success: true, data: filteredData });
+      const filteredDataByConfig = filteredData.filter((data) => {
+        return data.LineName === lineName && data.PotNumber === potNumber;
+      });
+
+      res.status(200).json({ success: true, data: filteredDataByConfig });
     } else if (startDate && stopDate) {
       //for threshold graph in dashboard page
 
@@ -665,6 +683,7 @@ export const getHindalcoAverageReport = async (req, res) => {
       intervalFromDate,
       intervalToDate,
       intervalOption,
+      thermocoupleConfiguration,
     } = req.query;
 
     // console.log('projectName', projectName);
@@ -679,12 +698,17 @@ export const getHindalcoAverageReport = async (req, res) => {
     if (avgFromDate && avgToDate) {
       const formattedAvgFromDate = avgFromDate + ",00:00:00";
       const formattedAvgToDate = avgToDate + ",23:59:59";
+      const configSplit = thermocoupleConfiguration.split("-Pot:");
+      const lineName = configSplit[0]?.trim();
+      const potNumber = configSplit[1]?.trim();
 
       if (averageOption === "hour") {
         const hindalcoAverageData = await hindalcoTimeModel.aggregate([
           {
             $match: {
               DeviceName: projectName,
+              LineName: lineName,
+              PotNumber: potNumber,
             },
           },
           {
@@ -950,6 +974,8 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $match: {
               DeviceName: projectName,
+              LineName: lineName,
+              PotNumber: potNumber,
             },
           },
           {
@@ -1215,6 +1241,8 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $match: {
               DeviceName: projectName,
+              LineName: lineName,
+              PotNumber: potNumber,
             },
           },
           {
@@ -1482,12 +1510,17 @@ export const getHindalcoAverageReport = async (req, res) => {
     else if (intervalFromDate && intervalToDate) {
       const formattedIntervalFromDate = intervalFromDate + ",00:00:00";
       const formattedIntervalToDate = intervalToDate + ",23:59:59";
+      const configSplit = thermocoupleConfiguration.split("-Pot:");
+      const lineName = configSplit[0]?.trim();
+      const potNumber = configSplit[1]?.trim();
 
       if (intervalOption === "hour") {
         const hindalcoHourlyData = await hindalcoTimeModel.aggregate([
           {
             $match: {
               DeviceName: projectName,
+              LineName: lineName,
+              PotNumber: potNumber,
             },
           },
           {
@@ -1684,6 +1717,8 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $match: {
               DeviceName: projectName,
+              LineName: lineName,
+              PotNumber: potNumber,
             },
           },
           {
@@ -1878,6 +1913,8 @@ export const getHindalcoAverageReport = async (req, res) => {
           {
             $match: {
               DeviceName: projectName,
+              LineName: lineName,
+              PotNumber: potNumber,
             },
           },
           {

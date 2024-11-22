@@ -402,6 +402,8 @@ export const getHindalcoProcess = async (req, res) => {
         dateRangeArray.push({
           startTime: entry.StartTime,
           stopTime: stopTime,
+          lineName: entry.LineName,
+          potNumber: entry.PotNumber,
         });
 
         thermocoupleConfigurationArray.push({

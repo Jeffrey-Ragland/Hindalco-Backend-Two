@@ -163,6 +163,9 @@ export const insertHindalcoData = async (req, res) => {
     const selectedThermocouples = hindalcoProcessTwo[0].SelectedThermocouples;
     // console.log("selected thermocouples", selectedThermocouples);
 
+    const adjustedDeviceBattery =
+      parseFloat(deviceBattery) > 100 ? 100 : parseFloat(deviceBattery);
+
     const hindalcoData = {
       DeviceName: deviceName,
       T1: s1,
@@ -182,7 +185,7 @@ export const insertHindalcoData = async (req, res) => {
       T15: s15,
       DeviceTemperature: deviceTemperature,
       DeviceSignal: deviceSignal,
-      DeviceBattery: deviceBattery,
+      DeviceBattery: adjustedDeviceBattery,
       Time: timestamp,
       LineName: hindalcoProcessTwo[0].LineName,
       PotNumber: hindalcoProcessTwo[0].PotNumber,

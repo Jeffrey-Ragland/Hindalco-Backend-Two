@@ -4,6 +4,7 @@ import loginModel from "../models/loginModel.js";
 import hindalcoTimeModel from "../models/hindalcoTimeModel.js";
 import hindalcoProcessModel from "../models/hindalcoProcessModel.js";
 import hindalcoProcessModelTwo from "../models/hindalcoProcessModelTwo.js";
+import deviationModel from "../models/hindalcoDeviationModel.js";
 import axios from "axios";
 
 // http://localhost:4000/backend/hindalcoSignup?Username=[username]&Password=[password]
@@ -390,6 +391,11 @@ export const getHindalcoProcess = async (req, res) => {
 
     let dateRangeArray = [];
     let thermocoupleConfigurationArray = [];
+    let t1Status = [];
+    let t4Status = [];
+    let t5Status = [];
+    let t6Status = [];
+    let t8Status = [];
     const timeLeftNone = "00h : 00m : 00s";
 
     if (hindalcoDateRange) {
@@ -636,10 +642,13 @@ export const getHindalcoProcess = async (req, res) => {
           7.83, 7.83, 7.83, 7.83, 7.83, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
           3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
           3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
+          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
+          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
+          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
+          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
+          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
+          3.33,
         ];
-
-        let t4Status = [];
 
         //for every 5 minutes
         // if (filteredData.length > 1) {
@@ -682,42 +691,144 @@ export const getHindalcoProcess = async (req, res) => {
           const recentDataT4 = filteredData[0].T4;
           const previousDataT4 = filteredData[12].T4;
 
-          console.log("recent data", recentDataT4);
-          console.log("previous data", previousDataT4);
+          const recentDataT5 = filteredData[0].T5;
+          const previousDataT5 = filteredData[12].T5;
 
-          const difference = Math.abs(recentDataT4 - previousDataT4);
+          const recentDataT6 = filteredData[0].T6;
+          const previousDataT6 = filteredData[12].T6;
+
+          // console.log("recent data", recentDataT4);
+          // console.log("previous data", previousDataT4);
+
+          const differenceT4 = Math.abs(recentDataT4 - previousDataT4);
+          const differenceT5 = Math.abs(recentDataT5 - previousDataT5);
+          const differenceT6 = Math.abs(recentDataT6 - previousDataT6);
 
           const currentDeviationValue =
             deviationValuesT4T5T6[filteredData.length - 2];
-          console.log("currentDeviationValue", currentDeviationValue);
-          console.log("filtered data length ", filteredData.length - 2);
-          console.log("difference", difference);
+          // console.log("currentDeviationValue", currentDeviationValue);
+          // console.log("filtered data length ", filteredData.length - 2);
+          // console.log("difference", difference);
 
-          if (difference < currentDeviationValue) {
+          let hourLabel = `H${(filteredData.length - 1) / 12}`;
+
+          if (differenceT4 < currentDeviationValue) {
             t4Status.push({
               deviationUsed: currentDeviationValue,
-              difference: difference,
-              status: "Low Deviation",
+              difference: differenceT4,
+              status: "Low",
+              hour: hourLabel,
             });
-          } else if (difference > currentDeviationValue) {
+          } else if (differenceT4 > currentDeviationValue) {
             t4Status.push({
               deviationUsed: currentDeviationValue,
-              difference: difference,
-              status: "High Deviation",
+              difference: differenceT4,
+              status: "High",
+              hour: hourLabel,
             });
-          } else if (difference == currentDeviationValue) {
+          } else if (differenceT4 == currentDeviationValue) {
             t4Status.push({
               deviationUsed: currentDeviationValue,
-              currentT4: recentDataT4,
-              status: "No Deviation",
+              difference: differenceT4,
+              status: "No",
+              hour: hourLabel,
             });
           }
+
+          if (differenceT5 < currentDeviationValue) {
+            t5Status.push({
+              deviationUsed: currentDeviationValue,
+              difference: differenceT5,
+              status: "Low",
+              hour: hourLabel,
+            });
+          } else if (differenceT5 > currentDeviationValue) {
+            t5Status.push({
+              deviationUsed: currentDeviationValue,
+              difference: differenceT5,
+              status: "High",
+              hour: hourLabel,
+            });
+          } else if (differenceT5 === currentDeviationValue) {
+            t5Status.push({
+              deviationUsed: currentDeviationValue,
+              difference: differenceT5,
+              status: "No",
+              hour: hourLabel,
+            });
+          }
+
+          if (differenceT6 < currentDeviationValue) {
+            t6Status.push({
+              deviationUsed: currentDeviationValue,
+              difference: differenceT6,
+              status: "Low",
+              hour: `H${(filteredData.length - 1) / 12}`,
+            });
+          } else if (differenceT6 > currentDeviationValue) {
+            t6Status.push({
+              deviationUsed: currentDeviationValue,
+              difference: differenceT6,
+              status: "High",
+              hour: `H${(filteredData.length - 1) / 12}`,
+            });
+          } else if (differenceT6 === currentDeviationValue) {
+            t6Status.push({
+              deviationUsed: currentDeviationValue,
+              difference: differenceT6,
+              status: "No",
+              hour: `H${(filteredData.length - 1) / 12}`,
+            });
+          }
+
+          const deviationData = {
+            DeviceName: "XY001",
+            T4Status: {
+              DeviationUsed: t4Status[0].deviationUsed,
+              Difference: t4Status[0].difference,
+              Status: t4Status[0].status,
+              Hour: t4Status[0].hour,
+            },
+
+            T5Status: {
+              DeviationUsed: t5Status[0].deviationUsed,
+              Difference: t5Status[0].difference,
+              Status: t5Status[0].status,
+              Hour: t5Status[0].hour,
+            },
+
+            T6Status: {
+              DeviationUsed: t6Status[0].deviationUsed,
+              Difference: t6Status[0].difference,
+              Status: t6Status[0].status,
+              Hour: t6Status[0].hour,
+            },
+          };
+
+          // console.log("deviation data", deviationData);
+
+          await deviationModel.create(deviationData);
         }
+
+        console.log("t4 status:", t4Status);
+
+        const deviationDataFromDB = await deviationModel
+          .find({ DeviceName: "XY001" })
+          .sort({ _id: -1 })
+          .limit(1);
+
+        console.log("deviation from DB:", deviationDataFromDB[0].T4Status);
+
+        const t4FromDB = deviationDataFromDB[0].T4Status;
+        const t5FromDB = deviationDataFromDB[0].T5Status;
+        const t6FromDB = deviationDataFromDB[0].T6Status;
 
         res.status(200).json({
           success: true,
           data: filteredData,
-          t4Status: t4Status,
+          t4Status: t4FromDB,
+          t5Status: t5FromDB,
+          t6Status: t6FromDB,
           inTimeRange: true,
           dateRange: dateRangeArray,
           thermocoupleConfiguration: thermocoupleConfigurationArray,
@@ -740,9 +851,24 @@ export const getHindalcoProcess = async (req, res) => {
         //   { sort: { _id: -1 }, new: true }
         // );
         // console.log("out of range loop triggered");
+
+        const deviationData = {
+          DeviceName: "XY001",
+          T4Status: {},
+
+          T5Status: {},
+
+          T6Status: {},
+        };
+
+        await deviationModel.create(deviationData);
+
         res.status(200).json({
           success: true,
           inTimeRange: false,
+          t4Status: [],
+          t5Status: [],
+          t6Status: [],
           dateRange: dateRangeArray,
           thermocoupleConfiguration: thermocoupleConfigurationArray,
           timeLeft: timeLeftNone,
@@ -753,9 +879,23 @@ export const getHindalcoProcess = async (req, res) => {
       }
     } // stop condition
     else if (hindalcoProcess.ProcessStatus === "Stop") {
+      const deviationData = {
+        DeviceName: "XY001",
+        T4Status: {},
+
+        T5Status: {},
+
+        T6Status: {},
+      };
+
+      await deviationModel.create(deviationData);
+
       res.status(200).json({
         success: false,
         inTimeRange: false,
+        t4Status: [],
+        t5Status: [],
+        t6Status: [],
         dateRange: dateRangeArray,
         thermocoupleConfiguration: thermocoupleConfigurationArray,
         timeLeft: timeLeftNone,

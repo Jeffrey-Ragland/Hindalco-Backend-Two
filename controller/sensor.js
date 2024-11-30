@@ -421,7 +421,8 @@ export const getHindalcoProcess = async (req, res) => {
     // console.log('hindalco date range', hindalcoDateRange);
 
     let dateRangeArray = [];
-    let thermocoupleConfigurationArray = [];
+    // let thermocoupleConfigurationArray = [];
+    let thermocoupleConfigurationSet = new Set();
 
     const timeLeftNone = "00h : 00m : 00s";
 
@@ -443,11 +444,16 @@ export const getHindalcoProcess = async (req, res) => {
           selectedThermocouples: entry.SelectedThermocouples,
         });
 
-        thermocoupleConfigurationArray.push({
-          thermocoupleConfiguration: `${lineName}-Pot:${potNumber}`,
-        });
+        // thermocoupleConfigurationArray.push({
+        //   thermocoupleConfiguration: `${lineName}-Pot:${potNumber}`,
+        // });
+        thermocoupleConfigurationSet.add(`${lineName}-Pot:${potNumber}`);
       });
     }
+
+    const thermocoupleConfigurationArray = Array.from(
+      thermocoupleConfigurationSet
+    ).map((config) => ({ thermocoupleConfiguration: config }));
 
     const hindalcoProcess = await hindalcoProcessModel.findOne({});
     if (!hindalcoProcess) {

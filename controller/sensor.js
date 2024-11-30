@@ -380,6 +380,11 @@ export const updateHindalcoProcess = async (req, res) => {
   }
 };
 
+let t4Status = [];
+let t5Status = [];
+let t6Status = [];
+let count = 0;
+
 export const getHindalcoProcess = async (req, res) => {
   try {
     const hindalcoDateRange = await hindalcoProcessModelTwo
@@ -392,9 +397,7 @@ export const getHindalcoProcess = async (req, res) => {
     let dateRangeArray = [];
     let thermocoupleConfigurationArray = [];
     let t1Status = [];
-    let t4Status = [];
-    let t5Status = [];
-    let t6Status = [];
+
     let t8Status = [];
     const timeLeftNone = "00h : 00m : 00s";
 
@@ -685,6 +688,15 @@ export const getHindalcoProcess = async (req, res) => {
         //   }
         // }
 
+        // if (filteredData.length > 1 && filteredData < 12) {
+        //   const status = "N/A";
+        // }
+        // if (filteredData.length >= 12 && filteredData < 24) {
+        //   const status = "12 diffrence value";
+        // }
+
+        console.log("filtered data:", filteredData);
+
         if (filteredData.length > 1 && (filteredData.length - 1) % 12 === 0) {
           console.log("diff logic triggered");
           // Perform calculation only when filteredData.length is a multiple of 12
@@ -704,35 +716,51 @@ export const getHindalcoProcess = async (req, res) => {
           const differenceT5 = Math.abs(recentDataT5 - previousDataT5);
           const differenceT6 = Math.abs(recentDataT6 - previousDataT6);
 
-          const currentDeviationValue =
-            deviationValuesT4T5T6[filteredData.length - 2];
+          let currentDeviationValue;
+          // deviationValuesT4T5T6[filteredData.length - 2];
           // console.log("currentDeviationValue", currentDeviationValue);
           // console.log("filtered data length ", filteredData.length - 2);
           // console.log("difference", difference);
 
+          if (filteredData.length > 1 && (filteredData.length - 1) % 12 === 0) {
+            count += 1;
+            if (count == 1) {
+              currentDeviationValue = deviationValuesT4T5T6[1];
+            }
+            if (count == 2) {
+              currentDeviationValue = deviationValuesT4T5T6[2];
+            }
+          }
+
           let hourLabel = `H${(filteredData.length - 1) / 12}`;
 
           if (differenceT4 < currentDeviationValue) {
-            t4Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT4,
-              status: "Low",
-              hour: hourLabel,
-            });
+            t4Status = [
+              {
+                deviationUsed: currentDeviationValue,
+                difference: differenceT4,
+                status: "Low",
+                hour: hourLabel,
+              },
+            ];
           } else if (differenceT4 > currentDeviationValue) {
-            t4Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT4,
-              status: "High",
-              hour: hourLabel,
-            });
+            t4Status = [
+              {
+                deviationUsed: currentDeviationValue,
+                difference: differenceT4,
+                status: "High",
+                hour: hourLabel,
+              },
+            ];
           } else if (differenceT4 == currentDeviationValue) {
-            t4Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT4,
-              status: "No",
-              hour: hourLabel,
-            });
+            t4Status = [
+              {
+                deviationUsed: currentDeviationValue,
+                difference: differenceT4,
+                status: "No",
+                hour: hourLabel,
+              },
+            ];
           }
 
           if (differenceT5 < currentDeviationValue) {
@@ -781,54 +809,54 @@ export const getHindalcoProcess = async (req, res) => {
             });
           }
 
-          const deviationData = {
-            DeviceName: "XY001",
-            T4Status: {
-              DeviationUsed: t4Status[0].deviationUsed,
-              Difference: t4Status[0].difference,
-              Status: t4Status[0].status,
-              Hour: t4Status[0].hour,
-            },
+          // const deviationData = {
+          //   DeviceName: "XY001",
+          //   T4Status: {
+          //     DeviationUsed: t4Status[0].deviationUsed,
+          //     Difference: t4Status[0].difference,
+          //     Status: t4Status[0].status,
+          //     Hour: t4Status[0].hour,
+          //   },
 
-            T5Status: {
-              DeviationUsed: t5Status[0].deviationUsed,
-              Difference: t5Status[0].difference,
-              Status: t5Status[0].status,
-              Hour: t5Status[0].hour,
-            },
+          //   T5Status: {
+          //     DeviationUsed: t5Status[0].deviationUsed,
+          //     Difference: t5Status[0].difference,
+          //     Status: t5Status[0].status,
+          //     Hour: t5Status[0].hour,
+          //   },
 
-            T6Status: {
-              DeviationUsed: t6Status[0].deviationUsed,
-              Difference: t6Status[0].difference,
-              Status: t6Status[0].status,
-              Hour: t6Status[0].hour,
-            },
-          };
+          //   T6Status: {
+          //     DeviationUsed: t6Status[0].deviationUsed,
+          //     Difference: t6Status[0].difference,
+          //     Status: t6Status[0].status,
+          //     Hour: t6Status[0].hour,
+          //   },
+          // };
 
           // console.log("deviation data", deviationData);
 
-          await deviationModel.create(deviationData);
+          // await deviationModel.create(deviationData);
         }
 
-        console.log("t4 status:", t4Status);
+        // console.log("t4 status:", t4Status);
 
-        const deviationDataFromDB = await deviationModel
-          .find({ DeviceName: "XY001" })
-          .sort({ _id: -1 })
-          .limit(1);
+        // const deviationDataFromDB = await deviationModel
+        //   .find({ DeviceName: "XY001" })
+        //   .sort({ _id: -1 })
+        //   .limit(1);
 
-        console.log("deviation from DB:", deviationDataFromDB[0].T4Status);
+        // console.log("deviation from DB:", deviationDataFromDB[0].T4Status);
 
-        const t4FromDB = deviationDataFromDB[0].T4Status;
-        const t5FromDB = deviationDataFromDB[0].T5Status;
-        const t6FromDB = deviationDataFromDB[0].T6Status;
+        // const t4FromDB = deviationDataFromDB[0].T4Status;
+        // const t5FromDB = deviationDataFromDB[0].T5Status;
+        // const t6FromDB = deviationDataFromDB[0].T6Status;
 
         res.status(200).json({
           success: true,
           data: filteredData,
-          t4Status: t4FromDB,
-          t5Status: t5FromDB,
-          t6Status: t6FromDB,
+          t4Status: t4Status,
+          t5Status: t5Status,
+          t6Status: t6Status,
           inTimeRange: true,
           dateRange: dateRangeArray,
           thermocoupleConfiguration: thermocoupleConfigurationArray,
@@ -852,16 +880,16 @@ export const getHindalcoProcess = async (req, res) => {
         // );
         // console.log("out of range loop triggered");
 
-        const deviationData = {
-          DeviceName: "XY001",
-          T4Status: {},
+        // const deviationData = {
+        //   DeviceName: "XY001",
+        //   T4Status: {},
 
-          T5Status: {},
+        //   T5Status: {},
 
-          T6Status: {},
-        };
+        //   T6Status: {},
+        // };
 
-        await deviationModel.create(deviationData);
+        // await deviationModel.create(deviationData);
 
         res.status(200).json({
           success: true,
@@ -879,16 +907,16 @@ export const getHindalcoProcess = async (req, res) => {
       }
     } // stop condition
     else if (hindalcoProcess.ProcessStatus === "Stop") {
-      const deviationData = {
-        DeviceName: "XY001",
-        T4Status: {},
+      // const deviationData = {
+      //   DeviceName: "XY001",
+      //   T4Status: {},
 
-        T5Status: {},
+      //   T5Status: {},
 
-        T6Status: {},
-      };
+      //   T6Status: {},
+      // };
 
-      await deviationModel.create(deviationData);
+      // await deviationModel.create(deviationData);
 
       res.status(200).json({
         success: false,

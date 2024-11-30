@@ -4,7 +4,6 @@ import loginModel from "../models/loginModel.js";
 import hindalcoTimeModel from "../models/hindalcoTimeModel.js";
 import hindalcoProcessModel from "../models/hindalcoProcessModel.js";
 import hindalcoProcessModelTwo from "../models/hindalcoProcessModelTwo.js";
-import deviationModel from "../models/hindalcoDeviationModel.js";
 import axios from "axios";
 
 // http://localhost:4000/backend/hindalcoSignup?Username=[username]&Password=[password]
@@ -380,10 +379,37 @@ export const updateHindalcoProcess = async (req, res) => {
   }
 };
 
+let t1Status = [];
 let t4Status = [];
 let t5Status = [];
 let t6Status = [];
-let count = 0;
+let t8Status = [];
+// let deviationCount = 0;
+
+const deviationValuesT1 = [
+  29.5, 29.5, 29.5, 21.67, 21.67, 21.67, 17, 17, 17, 12.67, 12.67, 12.67, 10.83,
+  10.83, 10.83, 11.5, 11.5, 11.5, 10.5, 10.5, 10.5, 12.33, 12.33, 12.33, 12.83,
+  12.83, 12.83, 13, 13, 13, 12.83, 12.83, 12.83, 11, 11, 11, 10.33, 10.33,
+  10.33, 9.67, 9.67, 9.67, 8.5, 8.5, 8.5, 6.5, 6.5, 6.5, 5.33, 5.33, 5.33, 6.17,
+  6.17, 6.17, 6.17, 6.17, 6.17, 3.33, 3.33, 3.33, 3.33,
+];
+
+const deviationValuesT4T5T6 = [
+  24.33, 24.33, 24.33, 20.17, 20.17, 20.17, 16.83, 16.83, 16.83, 15.0, 15.0,
+  15.0, 12.33, 12.33, 12.33, 12.17, 12.17, 12.17, 13.33, 13.33, 13.33, 12.83,
+  12.83, 12.83, 15.5, 15.5, 15.5, 16.5, 16.5, 16.5, 14.67, 14.67, 14.67, 14.5,
+  14.5, 14.5, 11.83, 11.83, 11.83, 10.33, 10.33, 10.33, 10.5, 10.5, 10.5, 8.17,
+  8.17, 8.17, 6.5, 6.5, 6.5, 7.83, 7.83, 7.83, 3.33, 3.33, 3.33, 3.33, 3.33,
+  3.33, 3.33,
+];
+
+const deviationValuesT8 = [
+  28.5, 28.5, 28.5, 22.5, 22.5, 22.5, 16.5, 16.5, 16.5, 13.0, 13.0, 13.0, 11.5,
+  11.5, 11.5, 10.67, 10.67, 10.67, 10.67, 10.67, 10.67, 11.5, 11.5, 11.5, 12.5,
+  12.5, 12.5, 10.0, 10.0, 10.0, 11.0, 11.0, 11.0, 9.83, 9.83, 9.83, 10.17,
+  10.17, 10.17, 8.33, 8.33, 8.33, 7.17, 7.17, 7.17, 7.5, 7.5, 7.5, 6.17, 6.17,
+  6.17, 7.33, 7.33, 7.33, 10.83, 10.83, 10.83, 4.0, 4.0, 4.0, 4.0,
+];
 
 export const getHindalcoProcess = async (req, res) => {
   try {
@@ -396,9 +422,7 @@ export const getHindalcoProcess = async (req, res) => {
 
     let dateRangeArray = [];
     let thermocoupleConfigurationArray = [];
-    let t1Status = [];
 
-    let t8Status = [];
     const timeLeftNone = "00h : 00m : 00s";
 
     if (hindalcoDateRange) {
@@ -530,129 +554,6 @@ export const getHindalcoProcess = async (req, res) => {
           return dbDate >= startTime && dbDate <= stopTime;
         });
 
-        // const deviationValuesT4T5T6 = [
-        //   2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03,
-        //   2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03,
-        //   2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03, 2.03,
-        //   2.03, 2.03, 2.03, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68,
-        //   1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68,
-        //   1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68,
-        //   1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.4, 1.4, 1.4, 1.4, 1.4,
-        //   1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
-        //   1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.25, 1.25, 1.25,
-        //   1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25,
-        //   1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25,
-        //   1.25, 1.25, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03,
-        //   1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03,
-        //   1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.01, 1.01, 1.01, 1.01, 1.01,
-        //   1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01,
-        //   1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.01, 1.11,
-        //   1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11,
-        //   1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11, 1.11,
-        //   1.11, 1.11, 1.11, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07,
-        //   1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07,
-        //   1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.07, 1.29, 1.29, 1.29, 1.29,
-        //   1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29,
-        //   1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29, 1.29,
-        //   1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38,
-        //   1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38,
-        //   1.38, 1.38, 1.38, 1.38, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22,
-        //   1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22,
-        //   1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.22, 1.21, 1.21, 1.21,
-        //   1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21,
-        //   1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21, 1.21,
-        //   1.21, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99,
-        //   0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99,
-        //   0.99, 0.99, 0.99, 0.99, 0.99, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86,
-        //   0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86,
-        //   0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.88, 0.88,
-        //   0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88,
-        //   0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88,
-        //   0.88, 0.88, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68,
-        //   0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.68,
-        //   0.68, 0.68, 0.68, 0.68, 0.68, 0.68, 0.54, 0.54, 0.54, 0.54, 0.54,
-        //   0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54,
-        //   0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.54, 0.65,
-        //   0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65,
-        //   0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65,
-        //   0.65, 0.65, 0.65, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28,
-        //   0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28,
-        //   0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28,
-        // ];
-
-        const deviationValuesT4T5T6 = [
-          24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33,
-          24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33,
-          24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 24.33,
-          24.33, 24.33, 24.33, 24.33, 24.33, 24.33, 20.17, 20.17, 20.17, 20.17,
-          20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17,
-          20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17,
-          20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17, 20.17,
-          20.17, 20.17, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83,
-          16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83,
-          16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83,
-          16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 16.83, 15.0, 15.0,
-          15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0,
-          15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0,
-          15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0,
-          15.0, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33,
-          12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33,
-          12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33,
-          12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.33, 12.17, 12.17, 12.17,
-          12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17,
-          12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17,
-          12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17, 12.17,
-          12.17, 12.17, 12.17, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33,
-          13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33,
-          13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33,
-          13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 13.33, 12.83,
-          12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83,
-          12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83,
-          12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83, 12.83,
-          12.83, 12.83, 12.83, 12.83, 12.83, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5,
-          15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5,
-          15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5,
-          15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 15.5, 16.5, 16.5, 16.5,
-          16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5,
-          16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5,
-          16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5,
-          14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67,
-          14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67,
-          14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.67,
-          14.67, 14.67, 14.67, 14.67, 14.67, 14.67, 14.5, 14.5, 14.5, 14.5,
-          14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5,
-          14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5,
-          14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 14.5, 11.83,
-          11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83,
-          11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83,
-          11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83, 11.83,
-          11.83, 11.83, 11.83, 11.83, 11.83, 10.33, 10.33, 10.33, 10.33, 10.33,
-          10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33,
-          10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33,
-          10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33, 10.33,
-          10.33, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5,
-          10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5,
-          10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5, 10.5,
-          10.5, 10.5, 10.5, 10.5, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17,
-          8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17,
-          8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17,
-          8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 8.17, 6.5, 6.5, 6.5, 6.5, 6.5,
-          6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5,
-          6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5, 6.5,
-          6.5, 6.5, 6.5, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83,
-          7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83,
-          7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83, 7.83,
-          7.83, 7.83, 7.83, 7.83, 7.83, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33, 3.33,
-          3.33,
-        ];
-
         //for every 5 minutes
         // if (filteredData.length > 1) {
         //   // console.log("inisde loop");
@@ -695,11 +596,23 @@ export const getHindalcoProcess = async (req, res) => {
         //   const status = "12 diffrence value";
         // }
 
-        console.log("filtered data:", filteredData);
-
         if (filteredData.length > 1 && (filteredData.length - 1) % 12 === 0) {
-          console.log("diff logic triggered");
           // Perform calculation only when filteredData.length is a multiple of 12
+
+          const currentDeviationValueT1 =
+            deviationValuesT1[(filteredData.length - 1) / 12 - 1] ?? 3.33;
+
+          const currentDeviationValueT4T5T6 =
+            deviationValuesT4T5T6[(filteredData.length - 1) / 12 - 1] ?? 3.33;
+
+          const currentDeviationValueT8 =
+            deviationValuesT8[(filteredData.length - 1) / 12 - 1] ?? 4;
+
+          let hourLabel = `H${(filteredData.length - 1) / 12}`;
+
+          const recentDataT1 = filteredData[0].T1;
+          const previousDataT1 = filteredData[12].T1;
+
           const recentDataT4 = filteredData[0].T4;
           const previousDataT4 = filteredData[12].T4;
 
@@ -709,154 +622,186 @@ export const getHindalcoProcess = async (req, res) => {
           const recentDataT6 = filteredData[0].T6;
           const previousDataT6 = filteredData[12].T6;
 
+          const recentDataT8 = filteredData[0].T8;
+          const previousDataT8 = filteredData[12].T8;
+
           // console.log("recent data", recentDataT4);
           // console.log("previous data", previousDataT4);
 
-          const differenceT4 = Math.abs(recentDataT4 - previousDataT4);
-          const differenceT5 = Math.abs(recentDataT5 - previousDataT5);
-          const differenceT6 = Math.abs(recentDataT6 - previousDataT6);
+          if (recentDataT1 !== "N/A") {
+            const differenceT1 = Math.abs(recentDataT1 - previousDataT1);
 
-          let currentDeviationValue;
-          // deviationValuesT4T5T6[filteredData.length - 2];
-          // console.log("currentDeviationValue", currentDeviationValue);
-          // console.log("filtered data length ", filteredData.length - 2);
-          // console.log("difference", difference);
-
-          if (filteredData.length > 1 && (filteredData.length - 1) % 12 === 0) {
-            count += 1;
-            if (count == 1) {
-              currentDeviationValue = deviationValuesT4T5T6[1];
+            if (differenceT1 < currentDeviationValueT1) {
+              t1Status = [
+                {
+                  deviationUsed: currentDeviationValueT1,
+                  difference: differenceT1,
+                  status: "Low",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT1 > currentDeviationValueT1) {
+              t1Status = [
+                {
+                  deviationUsed: currentDeviationValueT1,
+                  difference: differenceT1,
+                  status: "High",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT1 == currentDeviationValueT1) {
+              t1Status = [
+                {
+                  deviationUsed: currentDeviationValueT1,
+                  difference: differenceT1,
+                  status: "No",
+                  hour: hourLabel,
+                },
+              ];
             }
-            if (count == 2) {
-              currentDeviationValue = deviationValuesT4T5T6[2];
+          }
+
+          if (recentDataT4 !== "N/A") {
+            const differenceT4 = Math.abs(recentDataT4 - previousDataT4);
+
+            if (differenceT4 < currentDeviationValueT4T5T6) {
+              t4Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT4,
+                  status: "Low",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT4 > currentDeviationValueT4T5T6) {
+              t4Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT4,
+                  status: "High",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT4 == currentDeviationValueT4T5T6) {
+              t4Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT4,
+                  status: "No",
+                  hour: hourLabel,
+                },
+              ];
             }
           }
 
-          let hourLabel = `H${(filteredData.length - 1) / 12}`;
+          if (recentDataT5 !== "N/A") {
+            const differenceT5 = Math.abs(recentDataT5 - previousDataT5);
 
-          if (differenceT4 < currentDeviationValue) {
-            t4Status = [
-              {
-                deviationUsed: currentDeviationValue,
-                difference: differenceT4,
-                status: "Low",
-                hour: hourLabel,
-              },
-            ];
-          } else if (differenceT4 > currentDeviationValue) {
-            t4Status = [
-              {
-                deviationUsed: currentDeviationValue,
-                difference: differenceT4,
-                status: "High",
-                hour: hourLabel,
-              },
-            ];
-          } else if (differenceT4 == currentDeviationValue) {
-            t4Status = [
-              {
-                deviationUsed: currentDeviationValue,
-                difference: differenceT4,
-                status: "No",
-                hour: hourLabel,
-              },
-            ];
+            if (differenceT5 < currentDeviationValueT4T5T6) {
+              t5Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT5,
+                  status: "Low",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT5 > currentDeviationValueT4T5T6) {
+              t5Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT5,
+                  status: "High",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT5 === currentDeviationValueT4T5T6) {
+              t5Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT5,
+                  status: "No",
+                  hour: hourLabel,
+                },
+              ];
+            }
           }
 
-          if (differenceT5 < currentDeviationValue) {
-            t5Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT5,
-              status: "Low",
-              hour: hourLabel,
-            });
-          } else if (differenceT5 > currentDeviationValue) {
-            t5Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT5,
-              status: "High",
-              hour: hourLabel,
-            });
-          } else if (differenceT5 === currentDeviationValue) {
-            t5Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT5,
-              status: "No",
-              hour: hourLabel,
-            });
+          if (recentDataT6 !== "N/A") {
+            const differenceT6 = Math.abs(recentDataT6 - previousDataT6);
+
+            if (differenceT6 < currentDeviationValueT4T5T6) {
+              t6Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT6,
+                  status: "Low",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT6 > currentDeviationValueT4T5T6) {
+              t6Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT6,
+                  status: "High",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT6 === currentDeviationValueT4T5T6) {
+              t6Status = [
+                {
+                  deviationUsed: currentDeviationValueT4T5T6,
+                  difference: differenceT6,
+                  status: "No",
+                  hour: hourLabel,
+                },
+              ];
+            }
           }
 
-          if (differenceT6 < currentDeviationValue) {
-            t6Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT6,
-              status: "Low",
-              hour: `H${(filteredData.length - 1) / 12}`,
-            });
-          } else if (differenceT6 > currentDeviationValue) {
-            t6Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT6,
-              status: "High",
-              hour: `H${(filteredData.length - 1) / 12}`,
-            });
-          } else if (differenceT6 === currentDeviationValue) {
-            t6Status.push({
-              deviationUsed: currentDeviationValue,
-              difference: differenceT6,
-              status: "No",
-              hour: `H${(filteredData.length - 1) / 12}`,
-            });
+          if (recentDataT8 !== "N/A") {
+            const differenceT8 = Math.abs(recentDataT8 - previousDataT8);
+
+            if (differenceT8 < currentDeviationValueT8) {
+              t8Status = [
+                {
+                  deviationUsed: currentDeviationValueT8,
+                  difference: differenceT8,
+                  status: "Low",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT8 > currentDeviationValueT8) {
+              t8Status = [
+                {
+                  deviationUsed: currentDeviationValueT8,
+                  difference: differenceT8,
+                  status: "High",
+                  hour: hourLabel,
+                },
+              ];
+            } else if (differenceT8 === currentDeviationValueT8) {
+              t8Status = [
+                {
+                  deviationUsed: currentDeviationValueT8,
+                  difference: differenceT8,
+                  status: "No",
+                  hour: hourLabel,
+                },
+              ];
+            }
           }
-
-          // const deviationData = {
-          //   DeviceName: "XY001",
-          //   T4Status: {
-          //     DeviationUsed: t4Status[0].deviationUsed,
-          //     Difference: t4Status[0].difference,
-          //     Status: t4Status[0].status,
-          //     Hour: t4Status[0].hour,
-          //   },
-
-          //   T5Status: {
-          //     DeviationUsed: t5Status[0].deviationUsed,
-          //     Difference: t5Status[0].difference,
-          //     Status: t5Status[0].status,
-          //     Hour: t5Status[0].hour,
-          //   },
-
-          //   T6Status: {
-          //     DeviationUsed: t6Status[0].deviationUsed,
-          //     Difference: t6Status[0].difference,
-          //     Status: t6Status[0].status,
-          //     Hour: t6Status[0].hour,
-          //   },
-          // };
-
-          // console.log("deviation data", deviationData);
-
-          // await deviationModel.create(deviationData);
         }
-
-        // console.log("t4 status:", t4Status);
-
-        // const deviationDataFromDB = await deviationModel
-        //   .find({ DeviceName: "XY001" })
-        //   .sort({ _id: -1 })
-        //   .limit(1);
-
-        // console.log("deviation from DB:", deviationDataFromDB[0].T4Status);
-
-        // const t4FromDB = deviationDataFromDB[0].T4Status;
-        // const t5FromDB = deviationDataFromDB[0].T5Status;
-        // const t6FromDB = deviationDataFromDB[0].T6Status;
 
         res.status(200).json({
           success: true,
           data: filteredData,
+          t1Status: t1Status,
           t4Status: t4Status,
           t5Status: t5Status,
           t6Status: t6Status,
+          t8Status: t8Status,
           inTimeRange: true,
           dateRange: dateRangeArray,
           thermocoupleConfiguration: thermocoupleConfigurationArray,
@@ -867,36 +812,22 @@ export const getHindalcoProcess = async (req, res) => {
         });
       } else {
         //out of time range condition
-        // await hindalcoProcessModelTwo.findOneAndUpdate(
-        //   {},
-        //   {
-        //     $set: {
-        //       SelectedThermocouples: [],
-        //       LineName: "",
-        //       PotNumber: "",
-        //     },
-        //   },
-        //   { sort: { _id: -1 }, new: true }
-        // );
-        // console.log("out of range loop triggered");
 
-        // const deviationData = {
-        //   DeviceName: "XY001",
-        //   T4Status: {},
-
-        //   T5Status: {},
-
-        //   T6Status: {},
-        // };
-
-        // await deviationModel.create(deviationData);
+        // deviationCount = 0;
+        t1Status = [];
+        t4Status = [];
+        t5Status = [];
+        t6Status = [];
+        t8Status = [];
 
         res.status(200).json({
           success: true,
           inTimeRange: false,
+          t1Status: [],
           t4Status: [],
           t5Status: [],
           t6Status: [],
+          t8Status: [],
           dateRange: dateRangeArray,
           thermocoupleConfiguration: thermocoupleConfigurationArray,
           timeLeft: timeLeftNone,
@@ -907,23 +838,22 @@ export const getHindalcoProcess = async (req, res) => {
       }
     } // stop condition
     else if (hindalcoProcess.ProcessStatus === "Stop") {
-      // const deviationData = {
-      //   DeviceName: "XY001",
-      //   T4Status: {},
+      // deviationCount = 0;
 
-      //   T5Status: {},
-
-      //   T6Status: {},
-      // };
-
-      // await deviationModel.create(deviationData);
+      t1Status = [];
+      t4Status = [];
+      t5Status = [];
+      t6Status = [];
+      t8Status = [];
 
       res.status(200).json({
         success: false,
         inTimeRange: false,
+        t1Status: [],
         t4Status: [],
         t5Status: [],
         t6Status: [],
+        t8Status: [],
         dateRange: dateRangeArray,
         thermocoupleConfiguration: thermocoupleConfigurationArray,
         timeLeft: timeLeftNone,

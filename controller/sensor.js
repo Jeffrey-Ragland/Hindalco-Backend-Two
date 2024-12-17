@@ -297,7 +297,6 @@ export const updateHindalcoProcess = async (req, res) => {
       "0"
     )}:${second.padStart(2, "0")}`;
 
-
     // console.log("time=",buttonClickedTime)
 
     const [datePart2, timePart2] = calculatedStopTimeLocal.split(",");
@@ -540,7 +539,6 @@ export const getHindalcoProcess = async (req, res) => {
       if (hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
         startTime = hindalcoProcessTwo[0].StartTime;
         stopTime = hindalcoProcessTwo[0].AutoStopTime;
-    
       }
 
       // console.log('current time ', currentTimestamp);
@@ -550,11 +548,14 @@ export const getHindalcoProcess = async (req, res) => {
       const stopEpoch = new Date(stopTime).getTime();
 
       if (hindalcoData && stopTime >= currentTimestamp) {
-
         const currentDate = parseCustomTimestamp(currentTimestamp);
         const stopDate = parseCustomTimestamp(stopTime);
 
-        const timeLeftMs = stopDate - currentDate;
+        // console.log("current epoch", currentEpoch);
+        // console.log("stop epoch", stopEpoch);
+
+        // const timeLeftMs = stopDate - currentDate;
+        const timeLeftMs = stopEpoch - currentEpoch;
 
         const timeLeft = {
           hours: Math.floor(timeLeftMs / (1000 * 60 * 60)),

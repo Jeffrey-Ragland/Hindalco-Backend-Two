@@ -264,15 +264,19 @@ export const updateHindalcoProcess = async (req, res) => {
       hour12: false,
     });
 
+    // console.log("Kolkata time=",kolkataTime);
     const calculatedStopTimeObj = new Date(
       currentDateTime.getTime() + 61 * 60 * 60 * 1000 //61 hours
       // currentDateTime.getTime() + 60 * 1000 // 1 minute
     ); //calculate stop time
+    // console.log("60 hrs after epoch=",calculatedStopTimeObj);
 
     const calculatedStopTimeLocal = calculatedStopTimeObj.toLocaleString(
       "en-US",
       { timeZone: "Asia/Kolkata", hour12: false }
     );
+
+    // console.log("60 hrs after normal time=",calculatedStopTimeLocal);
 
     const [datePart, timePart] = kolkataTime.split(",");
     const trimmedTimePart = timePart.trim();
@@ -286,6 +290,9 @@ export const updateHindalcoProcess = async (req, res) => {
       2,
       "0"
     )}:${second.padStart(2, "0")}`;
+
+
+    // console.log("time=",buttonClickedTime)
 
     const [datePart2, timePart2] = calculatedStopTimeLocal.split(",");
     const trimmedTimePart2 = timePart2.trim();
@@ -322,9 +329,7 @@ export const updateHindalcoProcess = async (req, res) => {
         LineName: selectedLine,
         PotNumber: potNumber,
       };
-
       await hindalcoProcessModelTwo.create(processData);
-
       res.status(200).send("Process updated successfully");
     } catch (error) {
       res.status(500).send(error);
@@ -529,16 +534,19 @@ export const getHindalcoProcess = async (req, res) => {
       if (hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
         startTime = hindalcoProcessTwo[0].StartTime;
         stopTime = hindalcoProcessTwo[0].AutoStopTime;
+    
       }
 
       // console.log('current time ', currentTimestamp);
       // console.log("auto stop time", stopTime);
 
       if (hindalcoData && stopTime >= currentTimestamp) {
+
         const currentDate = parseCustomTimestamp(currentTimestamp);
         const stopDate = parseCustomTimestamp(stopTime);
 
         const timeLeftMs = stopDate - currentDate;
+        console.log("currenttime=",stopTime)
 
         const timeLeft = {
           hours: Math.floor(timeLeftMs / (1000 * 60 * 60)),

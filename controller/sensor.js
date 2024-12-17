@@ -259,10 +259,16 @@ export const updateHindalcoProcess = async (req, res) => {
 
   if (processStatus === "Start") {
     const currentDateTime = new Date();
+    // console.log("currentdatetime", currentDateTime);
+
     const kolkataTime = currentDateTime.toLocaleString("en-US", {
       timeZone: "Asia/Kolkata",
       hour12: false,
     });
+    // console.log("kolkataTime", kolkataTime);
+
+    // const kolkatDateTime = new Date(kolkataTime);
+    // console.log("kolkataDateTime", kolkatDateTime);
 
     // console.log("Kolkata time=",kolkataTime);
     const calculatedStopTimeObj = new Date(
@@ -540,13 +546,15 @@ export const getHindalcoProcess = async (req, res) => {
       // console.log('current time ', currentTimestamp);
       // console.log("auto stop time", stopTime);
 
+      const currentEpoch = Date.now(); // Current time in epoch
+      const stopEpoch = new Date(stopTime).getTime();
+
       if (hindalcoData && stopTime >= currentTimestamp) {
 
         const currentDate = parseCustomTimestamp(currentTimestamp);
         const stopDate = parseCustomTimestamp(stopTime);
 
         const timeLeftMs = stopDate - currentDate;
-        console.log("currenttime=",stopTime)
 
         const timeLeft = {
           hours: Math.floor(timeLeftMs / (1000 * 60 * 60)),
@@ -560,6 +568,8 @@ export const getHindalcoProcess = async (req, res) => {
         )}h : ${String(timeLeft.minutes).padStart(2, "0")}m : ${String(
           timeLeft.seconds
         ).padStart(2, "0")}s`;
+
+        // console.log("time left string", timeLeftString);
 
         // console.log(`Time left: ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`)
         // console.log(`Time left: ${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s`)

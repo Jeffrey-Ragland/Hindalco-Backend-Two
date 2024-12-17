@@ -72,7 +72,7 @@ export const validateToken = (req, res) => {
 // insert link
 // http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=[insertData]&s2=[insertData]&s3=[insertData]&s4=[insertData]&s5=[insertData]&s6=[insertData]&s7=[insertData]&s8=[insertData]&s9=[insertData]&s10=[insertData]&s11=[insertData]&s12=[insertData]&s13=[insertData]&s14=[insertData]&s15=[insertData]&deviceTemperature=[deviceTemperature]&deviceSignal=[deviceSignal]&deviceBattery=[deviceBattery]
 
-// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
+// http://localhost:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=25&deviceSignal=25&deviceBattery=100
 
 // http://13.202.211.76:4000/backend/insertHindalcoData?deviceName=XY001&s1=45&s2=78&s3=23&s4=56&s5=89&s6=12&s7=34&s8=67&s9=90&s10=21&s11=43&s12=76&s13=54&s14=87&s15=32&deviceTemperature=67&deviceSignal=78&deviceBattery=89
 
@@ -137,6 +137,8 @@ export const insertHindalcoData = async (req, res) => {
   const [month, date, year] = datePart.split("/");
   const [hour, minute, second] = trimmedTimePart.split(":");
 
+  const adjustedHour = hour === "24" ? "00" : hour.padStart(2, "0");
+
   // const [date, zone] = time.split(" ");
   // const [datePart, timePart] = date.split(",");
   // const [year, month, day] = datePart.split("/");
@@ -149,63 +151,72 @@ export const insertHindalcoData = async (req, res) => {
   const timestamp = `${year}-${month.padStart(2, "0")}-${date.padStart(
     2,
     "0"
-  )},${hour.padStart(2, "0")}:${minute.padStart(2, "0")}:${second.padStart(
+  )},${adjustedHour.padStart(2, "0")}:${minute.padStart(
     2,
     "0"
-  )}`;
+  )}:${second.padStart(2, "0")}`;
 
   try {
-    const hindalcoProcessTwo = await hindalcoProcessModelTwo
-      .find({ DeviceName: "XY001" })
-      .sort({ _id: -1 })
-      .limit(1);
+    const hindalcoProcess = await hindalcoProcessModel.findOne({});
 
-    const selectedThermocouples = hindalcoProcessTwo[0].SelectedThermocouples;
-    // console.log("selected thermocouples", selectedThermocouples);
+    const currentHindalcoStatus = hindalcoProcess.ProcessStatus;
 
-    const adjustedDeviceBattery =
-      parseFloat(deviceBattery) > 100 ? 100 : parseFloat(deviceBattery);
+    // console.log("hindalco process", currentHindalcoStatus);
 
-    const hindalcoData = {
-      DeviceName: deviceName,
-      T1: s1,
-      T2: s2,
-      T3: s3,
-      T4: s4,
-      T5: s5,
-      T6: s6,
-      T7: s7,
-      T8: s8,
-      T9: s9,
-      T10: s10,
-      T11: s11,
-      T12: s12,
-      T13: s13,
-      T14: s14,
-      T15: s15,
-      DeviceTemperature: deviceTemperature,
-      DeviceSignal: deviceSignal,
-      DeviceBattery: adjustedDeviceBattery,
-      Time: timestamp,
-      LineName: hindalcoProcessTwo[0].LineName,
-      PotNumber: hindalcoProcessTwo[0].PotNumber,
-    };
+    if (currentHindalcoStatus === "Start") {
+      // console.log("inside if");
+      const hindalcoProcessTwo = await hindalcoProcessModelTwo
+        .find({ DeviceName: "XY001" })
+        .sort({ _id: -1 })
+        .limit(1);
 
-    if (!selectedThermocouples.length) {
-      for (let i = 1; i <= 15; i++) {
-        const key = `T${i}`;
-        hindalcoData[key] = "N/A";
-      }
-    } else {
-      for (let i = 1; i <= 15; i++) {
-        const key = `T${i}`;
-        if (!selectedThermocouples.includes(key)) {
+      const selectedThermocouples = hindalcoProcessTwo[0].SelectedThermocouples;
+      // console.log("selected thermocouples", selectedThermocouples);
+
+      const adjustedDeviceBattery =
+        parseFloat(deviceBattery) > 100 ? 100 : parseFloat(deviceBattery);
+
+      const hindalcoData = {
+        DeviceName: deviceName,
+        T1: s1,
+        T2: s2,
+        T3: s3,
+        T4: s4,
+        T5: s5,
+        T6: s6,
+        T7: s7,
+        T8: s8,
+        T9: s9,
+        T10: s10,
+        T11: s11,
+        T12: s12,
+        T13: s13,
+        T14: s14,
+        T15: s15,
+        DeviceTemperature: deviceTemperature,
+        DeviceSignal: deviceSignal,
+        DeviceBattery: adjustedDeviceBattery,
+        Time: timestamp,
+        LineName: hindalcoProcessTwo[0].LineName,
+        PotNumber: hindalcoProcessTwo[0].PotNumber,
+      };
+
+      if (!selectedThermocouples.length) {
+        for (let i = 1; i <= 15; i++) {
+          const key = `T${i}`;
           hindalcoData[key] = "N/A";
         }
+      } else {
+        for (let i = 1; i <= 15; i++) {
+          const key = `T${i}`;
+          if (!selectedThermocouples.includes(key)) {
+            hindalcoData[key] = "N/A";
+          }
+        }
       }
-    }
 
-    await hindalcoTimeModel.create(hindalcoData);
+      await hindalcoTimeModel.create(hindalcoData);
+    }
 
     try {
       const backupAPIResponse = await axios.get(
@@ -213,9 +224,9 @@ export const insertHindalcoData = async (req, res) => {
       );
 
       if (backupAPIResponse.status === 200) {
-        res
-          .status(200)
-          .json({ message: "Data inserted successfully and api success" });
+        res.status(200).json({
+          message: "Data inserted successfully and backup api success",
+        });
       } else {
         console.log("Backup API failed");
       }
@@ -264,19 +275,15 @@ export const updateHindalcoProcess = async (req, res) => {
       hour12: false,
     });
 
-    // console.log("Kolkata time=",kolkataTime);
     const calculatedStopTimeObj = new Date(
       currentDateTime.getTime() + 61 * 60 * 60 * 1000 //61 hours
       // currentDateTime.getTime() + 60 * 1000 // 1 minute
-    ); //calculate stop time
-    // console.log("60 hrs after epoch=",calculatedStopTimeObj);
+    );
 
     const calculatedStopTimeLocal = calculatedStopTimeObj.toLocaleString(
       "en-US",
       { timeZone: "Asia/Kolkata", hour12: false }
     );
-
-    // console.log("60 hrs after normal time=",calculatedStopTimeLocal);
 
     const [datePart, timePart] = kolkataTime.split(",");
     const trimmedTimePart = timePart.trim();
@@ -291,13 +298,11 @@ export const updateHindalcoProcess = async (req, res) => {
       "0"
     )}:${second.padStart(2, "0")}`;
 
-
-    // console.log("time=",buttonClickedTime)
-
     const [datePart2, timePart2] = calculatedStopTimeLocal.split(",");
     const trimmedTimePart2 = timePart2.trim();
     const [month2, date2, year2] = datePart2.split("/");
     const [hour2, minute2, second2] = trimmedTimePart2.split(":");
+
     //  to convert local stop time to our custom format
     const calculatedStopTimeCustom = `${year2}-${month2.padStart(
       2,
@@ -389,9 +394,6 @@ let t4Status = [];
 let t5Status = [];
 let t6Status = [];
 let t8Status = [];
-// let deviationCount = 0;
-
-//dec 1
 
 const deviationValuesT1 = [
   29.5, 29.5, 29.5, 21.67, 21.67, 21.67, 17, 17, 17, 12.67, 12.67, 12.67, 10.83,
@@ -534,14 +536,12 @@ export const getHindalcoProcess = async (req, res) => {
       if (hindalcoProcessTwo && hindalcoProcessTwo.length > 0) {
         startTime = hindalcoProcessTwo[0].StartTime;
         stopTime = hindalcoProcessTwo[0].AutoStopTime;
-    
       }
 
       // console.log('current time ', currentTimestamp);
       // console.log("auto stop time", stopTime);
 
       if (hindalcoData && stopTime >= currentTimestamp) {
-
         const currentDate = parseCustomTimestamp(currentTimestamp);
         const stopDate = parseCustomTimestamp(stopTime);
 

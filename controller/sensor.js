@@ -20,7 +20,7 @@ export const signup = (req, res) => {
     .catch((error) => console.log(error));
 };
 
-// test
+// final
 
 export const login = (req, res) => {
   const { Username, Password } = req.body;

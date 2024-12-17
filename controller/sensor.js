@@ -554,6 +554,7 @@ export const getHindalcoProcess = async (req, res) => {
         // console.log("current epoch", currentEpoch);
         // console.log("stop epoch", stopEpoch);
 
+        // new
         // const timeLeftMs = stopDate - currentDate;
         const timeLeftMs = stopEpoch - currentEpoch;
 
